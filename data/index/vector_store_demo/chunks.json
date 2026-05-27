@@ -1,0 +1,23 @@
+[
+  {
+    "chunk_id": "c1",
+    "text": "deep learning for image classification",
+    "source": "demo",
+    "page": 1,
+    "metadata": {}
+  },
+  {
+    "chunk_id": "c2",
+    "text": "coffee and tea are common drinks",
+    "source": "demo",
+    "page": 2,
+    "metadata": {}
+  },
+  {
+    "chunk_id": "c3",
+    "text": "neural networks improve computer vision",
+    "source": "demo",
+    "page": 3,
+    "metadata": {}
+  }
+]

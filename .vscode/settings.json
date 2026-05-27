@@ -1,0 +1,8 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    "python.defaultInterpreterPath": "D:\\anaconda3\\envs\\research_agent\\python.exe",
+    "python.analysis.extraPaths": [
+        "D:\\anaconda3\\envs\\research_agent\\Lib\\site-packages"
+    ]
+}
