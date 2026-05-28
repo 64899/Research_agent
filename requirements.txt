@@ -6,3 +6,4 @@ openai
 pyyaml
 tqdm
 pytest
+rank-bm25

@@ -3,6 +3,8 @@ import argparse
 from src.embeddings.embedding_model import EmbeddingModel
 from src.index.vector_store import VectorStore
 from src.llm.vllm_client import MockLLMClient, VLLMClient
+from src.index.bm25_index import BM25Index
+from src.retrievers.hybrid_retriever import HybridRetriever
 
 def build_context(results: list[dict]) -> str:
     context_parts = []
@@ -57,6 +59,8 @@ def main() -> None:
     parser.add_argument("--model_name", default="X", help="Model name served by vLLM.")
     parser.add_argument("--temperature", type=float, default=0.2, help="LLM sampling temperature.")
     parser.add_argument("--max_tokens", type=int, default=128, help="Maximum tokens for LLM output.")
+    parser.add_argument("--retriever",choices=["dense", "bm25", "hybrid"],default="dense",help="Retriever backend to use.",)
+    parser.add_argument("--alpha", type=float, default=0.5, help="Hybrid retrieval dense weight.")
 
     args = parser.parse_args()
 
@@ -64,12 +68,23 @@ def main() -> None:
     print(f"Query: {args.query}")
     print(f"Top k: {args.top_k}")
 
-    model = EmbeddingModel("sentence-transformers/all-MiniLM-L6-v2")
-
-    store = VectorStore(model)
-    store.load(args.index_dir)
-
-    results = store.search(args.query, top_k=args.top_k)
+    if args.retriever == "dense":
+        model = EmbeddingModel("sentence-transformers/all-MiniLM-L6-v2")
+        store = VectorStore(model)
+        store.load(args.index_dir)
+        results = store.search(args.query, top_k=args.top_k)
+    elif args.retriever == "bm25":
+        bm25_index = BM25Index()
+        bm25_index.load(args.index_dir)
+        results = bm25_index.search(args.query, top_k=args.top_k)
+    else:
+        model = EmbeddingModel("sentence-transformers/all-MiniLM-L6-v2")
+        dense_store = VectorStore(model)
+        dense_store.load(args.index_dir)
+        bm25_index = BM25Index()
+        bm25_index.load(args.index_dir)
+        hybrid_retriever = HybridRetriever(dense_retriever=dense_store,bm25_retriever=bm25_index,alpha=args.alpha,)
+        results = hybrid_retriever.search(args.query, top_k=args.top_k)
 
     context = build_context(results)
     #print("Context:")
@@ -99,11 +114,13 @@ def main() -> None:
 
     print("Retrieved chunks:")
     for result in results:
+        score_info = f"[score={result['score']:.4f}]"
+        if "dense_score" in result and "bm25_score" in result:
+            score_info = (f"[score={result['score']:.4f} "f"dense={result['dense_score']:.4f} "f"bm25={result['bm25_score']:.4f}]")
         print(
-            f"[score={result['score']:.4f}] "
-            f"{result['source']} page={result['page']} "
-            f"chunk_id={result['chunk_id']}"
-        )
+    f"{score_info} "
+    f"{result['source']} page={result['page']} "
+    f"chunk_id={result['chunk_id']}")
         print(result["text"][:500])
         print("-" * 80)
 

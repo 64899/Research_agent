@@ -1,0 +1,44 @@
+[
+  {
+    "chunk_id": "c1",
+    "text": "fault diagnosis method for rotating machinery using deep learning",
+    "source": "demo",
+    "page": 1,
+    "metadata": {}
+  },
+  {
+    "chunk_id": "c2",
+    "text": "coffee and tea are common drinks in daily life",
+    "source": "demo",
+    "page": 2,
+    "metadata": {}
+  },
+  {
+    "chunk_id": "c3",
+    "text": "image classification with neural network and convolution model",
+    "source": "demo",
+    "page": 3,
+    "metadata": {}
+  },
+  {
+    "chunk_id": "c4",
+    "text": "bearing fault detection experiment for industrial equipment",
+    "source": "demo",
+    "page": 4,
+    "metadata": {}
+  },
+  {
+    "chunk_id": "c5",
+    "text": "weather forecast and city temperature prediction",
+    "source": "demo",
+    "page": 5,
+    "metadata": {}
+  },
+  {
+    "chunk_id": "c6",
+    "text": "medical report generation from clinical notes",
+    "source": "demo",
+    "page": 6,
+    "metadata": {}
+  }
+]

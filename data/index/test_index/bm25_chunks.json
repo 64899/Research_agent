@@ -1,0 +1,830 @@
+[
+  {
+    "chunk_id": "test_p1_c0",
+    "text": "Uncertainty-aware deep variational attention network: A trustworthy mechanical fault diagnostic model assisted by out-of-distribution detection Yiming Xiao a , Haidong Shao a,* , Haomiao Zhang a, Rongming Wei a, Bin Liu b a College of Mechanical and Vehicle Engineering, Hunan University, Changsha, 410082, China b Department of Management Science, University of Strathclyde, Glasgow, G1 1XQ, UK A R T I C L E I N F O Keywords: Variational attention Uncertainty estimation Bayesian variation learning Trustworthy fault diagnosis Out-of-distribution detection A B S T R A C T Most attention mechanisms used for fault diagnosis are deterministic attention with fixed attention weights and thus can only provide overconfident point estimate predictions. When handling out-of-distribution (OOD) inputs",
+    "source": "data/raw/test.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p1_c1",
+    "text": "nly provide overconfident point estimate predictions. When handling out-of-distribution (OOD) inputs, they typically produce untrustworthy diagnostic decisions that incorrectly classify them into any seen fault classes. Unlike deterministic approaches, variational attention treats attention weights as latent random variables drawn from their posterior distribution, enabling uncertainty estimation to reject OOD samples. However, current implementations of variational attention typically require customized structural modifications to original deterministic attention, hindering deployment across different attention architectures. Moreover, existing vari­ ational attention primarily focuses on self-attention, with limited exploration in other types of attention. To address these limitati",
+    "source": "data/raw/test.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p1_c2",
+    "text": "on self-attention, with limited exploration in other types of attention. To address these limitations, this paper proposes: (1) an architecture-agnostic variational attention applicable to various popular deterministic attention; (2) a Monte Carlo shaping layer ensuring attention weights’ diversity for reliable uncertainty quantification; (3) a model uncertainty estimation scheme detecting distribution shifts. These components form an uncertainty-aware deep variational attention network for OOD detection-assisted trustworthy mechanical fault diagnosis. The experimental results show that the proposed method not only gives accurate predictions for in-distribution samples but also effectively detects OOD samples. 1. Introduction Attention mechanism, which can effectively model the depe",
+    "source": "data/raw/test.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p1_c3",
+    "text": "ively detects OOD samples. 1. Introduction Attention mechanism, which can effectively model the dependencies between the channels, spatial positions, or temporal sequences of high- dimensional fault features, has become a significant component of state- of-the-art intelligent fault diagnostic models. By multiplying the input features with the generated attention weights, the attention mechanism improves both the performance and interpretability of the model (Xiao et al., 2025a, 2025b; Guo et al., 2024; Zhang et al., 2025). Most attention mechanisms used for fault diagnosis generate only a fixed set of attention weights for a single input and therefore are called deterministic attention mechanisms. This deterministic network struc­ ture allows the model to produce only overconfident",
+    "source": "data/raw/test.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p1_c4",
+    "text": "on mechanisms. This deterministic network struc­ ture allows the model to produce only overconfident point estimate predictions without measuring the uncertainty of the results, which is unsuitable for applications with safety-critical requirements. For example, when models are deployed in an open-world scenario, there will inevitably be test samples of unseen fault classes, i.e., out-of- distribution (OOD) samples (Yang et al., 2021; Xie et al., 2023; Zhou et al., 2022, 2023; Zhang et al., 2024). At this point, a trustworthy fault diagnostic model should not only give accurate predictions for in-distribution (ID) samples but also detect the OOD samples and hand them over to researchers for further investigation (Zhou et al., 2022), (Han and Li, 2022). However, such diagnostic mo",
+    "source": "data/raw/test.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p1_c5",
+    "text": "hers for further investigation (Zhou et al., 2022), (Han and Li, 2022). However, such diagnostic models with deterministic attention usually only overconfidently misdiagnose these samples as any seen fault class without issuing warnings to researchers. This poses a potential risk of failure for mechanical equipment, compromising its reliability and safety. In contrast, if a diagnostic model can provide predictions along with the uncertainty associated with them, the researcher can judge the confidence of the results based on the uncer­ tainty level and reject OOD samples that typically have high uncertainty in their results. Therefore, it is necessary to seek an attention structure that enables the diagnostic model to be uncertainty-aware. In recent years, some scholars have focus",
+    "source": "data/raw/test.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p1_c6",
+    "text": "that enables the diagnostic model to be uncertainty-aware. In recent years, some scholars have focused on an improved version of deterministic attention, called variational attention (also known as stochastic attention). Its attention weights are latent random variables following their posterior distribution, rather than the usual fixed values, so that multiple different sets of attention weights can be generated for a single input. Despite the design and optimization challenges associated * Corresponding author. E-mail address: hdshao@hnu.edu.cn (H. Shao). Contents lists available at ScienceDirect Engineering Applications of Artificial Intelligence journal homepage: www.elsevier.com/locate/engappai https://doi.org/10.1016/j.engappai.2025.111386 Received 24 November 2024; Received i",
+    "source": "data/raw/test.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p1_c7",
+    "text": "locate/engappai https://doi.org/10.1016/j.engappai.2025.111386 Received 24 November 2024; Received in revised form 21 April 2025; Accepted 3 June 2025 Engineering Applications of Artiϧcial Intelligence 157 (2025) 111386 Available online 13 June 2025 0952-1976/© 2025 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies.",
+    "source": "data/raw/test.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c8",
+    "text": "with variational attention, it allows for uncertainty estimation that is difficult to achieve with deterministic attention (Xue et al., 2022; Wu et al., 2022; Deng et al., 2018), which can then be used to determine whether a result is trustworthy or not. Moreover, variational attention has been demonstrated to improve model generalization. These advan­ tages of variational attention have led to its remarkable success in computer vision and natural language processing, and its subsequent introduction to fault diagnosis. However, existing variational attention mechanisms (Fan et al., 2020; Zhang et al., 2021; Li et al., 2024; Xiao et al., 2023, 2024) usually require direct modeling of the posterior distribution of attention weights. This necessitates modifications to the structure",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c9",
+    "text": "the posterior distribution of attention weights. This necessitates modifications to the structure of the original deterministic attention mechanism, such as adding a customized prior inference module and a customized posterior inference module. This further increases the difficulty of deploying variational attention in neural networks and makes it hard to extend the attention randomization strategy designed for one attention architecture to another. Additionally, existing variational attention is mostly designed based on self-attention, and there is limited variational atten­ tion constructed for other types of attention such as channel attention and position attention. Therefore, there is an urgent need for a highly universal, architecture-agnostic attention randomization strate",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c10",
+    "text": "here is an urgent need for a highly universal, architecture-agnostic attention randomization strategy to make variational attention easier to deploy in various architectures. To address the above problems, we propose an alternative approach to construct variational attention, i.e., modeling the posterior distribu­ tion of the network parameters of the attention module, and generating random attention weights through random network parameters drawn from this posterior. This strategy eliminates the need to design the complex customized structure of variational attention and can therefore be more readily applied to various attention architectures. Furthermore, we develop an uncertainty-aware deep variational attention network (DVAN) based on the proposed variational attention, which",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c11",
+    "text": "aware deep variational attention network (DVAN) based on the proposed variational attention, which is an OOD detection-assisted trustworthy fault diagnostic model. The proposed model is applied to the OOD detection tasks in bearing and gearbox fault diagnosis, and the experimental results show that the model not only gives accurate predictions for ID samples but also effectively detects OOD samples to avoid potential risks of equipment failure. The key contributions of this paper are as follows: (1) Architecture-agnostic variational attention: As the core of DVAN the proposed variational attention is architecture-agnostic and can be designed based on various popular deterministic attention modules, such as channel attention (Mu et al., 2025), (Hu et al., 2018), spatial attentio",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c12",
+    "text": "ttention modules, such as channel attention (Mu et al., 2025), (Hu et al., 2018), spatial attention (Hou et al., 2021), (Li et al., 2025), mixed attention (Woo et al., 2018), (Fu et al., 2019), etc. During the inference phase, DVAN can construct multiple attention modules by randomly drawing multiple samples from the posterior, an operation known as Monte Carlo (MC) sampling. These attention modules generate different attention weights to enable DVAN to focus on different parts of the object and give different diagnostic decisions, which can then be used to estimate the uncertainty of the diagnostic result. (2) MCSL: The experiments reveal that simply randomizing the attention module parameters may not generate sufficiently diverse attention weights. To address this, the paper",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c13",
+    "text": "ule parameters may not generate sufficiently diverse attention weights. To address this, the paper introduces an MC shaping layer (MCSL) that enhances the diversity of attention weights. This is achieved by aligning the distribution of unnormalized attention weights with a predefined prior distri­ bution during the training phase. (3) Model Uncertainty Estimation: Previous studies (Han and Li, 2022) have utilized ensemble learning to develop uncertainty-based OOD detection methods for fault diagnosis. They usually used the expectation of the softmax outputs from ensemble members to estimate the prediction uncertainty of the diagnostic result, which combines both model uncertainty and data uncertainty. However, the data uncertainty arises from the noise present in the vibra",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c14",
+    "text": "nty and data uncertainty. However, the data uncertainty arises from the noise present in the vibration signals, while it is the model uncertainty that accounts for the distribution shifts in the sam­ ples. Therefore, this paper introduces a model uncertainty esti­ mation scheme that separates model uncertainty from prediction uncertainty, leading to an accurate determination of whether a sample is ID or OOD. The remainder of this article is laid out as follows: Section 2 briefly reviews the research background. Section 3 elaborates on the proposed DVAN model and its key components. Section 4 describes the experi­ mental setup and analyzes the experimental results. The conclusions and future research directions are discussed in Section 5. 2. Background 2.1. Bayesian variational lear",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c15",
+    "text": "future research directions are discussed in Section 5. 2. Background 2.1. Bayesian variational learning Typically, the optimal model parameters learned for a deep neural network (DNN) with respect to a training dataset D are simply point estimates of those parameters. Therefore, the mapping that can be realized by a trained DNN is deterministic, and for a given test input, only a fixed output can be provided. In contrast, Bayesian neural net­ works (BNN) (Blundell et al., 2015) do not provide point estimates of these parameters, but rather attempt to give the posterior distribution p(ω|D ) over all parameters ω. However, modern neural networks typically have a large number of parameters, which make p(ω|D ) difficult to solve by the commonly used Bayes’ rule. Therefore, BNN chooses",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c16",
+    "text": "ers, which make p(ω|D ) difficult to solve by the commonly used Bayes’ rule. Therefore, BNN chooses to approximate this posterior using the variational inference method. Variational inference aims to find a distribution as close as possible to the true posterior distribution from a family of distributions qθ controlled by the variational parameter θ, thus the above posterior inference problem is transformed into an optimization problem that can be easily handled by neural networks. In practice, the Kullback-Leibler (KL) divergence of variational distribution qθ(ω) and true posterior p(ω|D ) is used as an optimization objective to minimize their distribu­ tion discrepancy. KL(qθ(ω)‖p(ω|D )) = ∫ qθ(ω)log qθ(ω) p(ω|D ) dω = ∫ qθ(ω)log qθ(ω)p(D ) p(D |ω)p(ω) dω = log p(D ) − ∫ qθ(ω)lo",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c17",
+    "text": "(ω|D )) = ∫ qθ(ω)log qθ(ω) p(ω|D ) dω = ∫ qθ(ω)log qθ(ω)p(D ) p(D |ω)p(ω) dω = log p(D ) − ∫ qθ(ω)log p(D |ω)p(ω) qθ(ω) dω ⏟̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅⏞⏞̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅⏟ L (ω,θ) (1) where log p(D ) and L (ω, θ) are called evidence and evidence lower bound (ELBO) respectively. Considering that log p(D ) is a constant, minimizing KL(qθ(ω)‖p(ω|D )) is equivalent to maximizing ELBO, which can be further described as: L (ω, θ) = ∫ qθ(ω)log p(D |ω)dω − ∫ qθ(ω)log qθ(ω) p(ω) dω = Eqθ(ω)[log p(D |ω)] ⏟̅̅̅̅̅̅̅̅̅̅̅̅̅̅⏞⏞̅̅̅̅̅̅̅̅̅̅̅̅̅̅⏟ L 1 −KL(qθ(ω)‖p(ω)) ⏟̅̅̅̅̅̅̅̅̅̅̅̅⏞⏞̅̅̅̅̅̅̅̅̅̅̅̅⏟ L 2 (2) where ✓1 is the likelihood cost, which indicates the degree to which the model fits the data, and ✓2 is the complexity cost, which indicates how similar the variational posterior qθ(ω) is to th",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p2_c18",
+    "text": "and ✓2 is the complexity cost, which indicates how similar the variational posterior qθ(ω) is to the prior p(ω). In BNN, the variational posterior is usually a diagonal Gaussian distribution controlled by the learned mean μ0 and standard deviation σ0. Then, a sample of the model parameters ω can be obtained by sampling a unit Gaussian and shifting it by the mean μ0 while scaling it by the standard deviation σ0. This method is called reparameterization trick. Since the standard deviation σ0 needs to remain non-negative, generally it follows σ0 = log(1 + exp(ρ0)), and the variational parameters θ = (μ0, ρ0). Therefore, the process of yielding a sample of the model parameters ω Y. Xiao et al.",
+    "source": "data/raw/test.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c19",
+    "text": "can be defined as: ω = μ0 + log(1 + exp(ρ0))∘ε (3) where ∘ represents point-wise multiplication, and ε ∼N (0,1). The prior is usually a diagonal Gaussian distribution controlled by the pre-specified mean μ1 and standard deviation σ1, which gives the ✓2 in Eq. (2) an analytic form: KL(qθ(ω)‖p(ω)) = log σ1 σ0 + (σ0)2 + (μ0 −μ1)2 2(σ1)2 −1 2 (4) According to the unbiased MC estimation, the ✓1 can be approxi­ mated by drawing samples from the variational posterior qθ(ω), and therefore the ELBO can be rewritten as: L (ω, θ) ≈1 K ∑K k=1 log p ( D |ω(k)) −KL(qθ(ω)‖p(ω)) (5) where K denotes the number of samples drawn from qθ(ω), ω(k) repre­ sents the sample obtained at the kth sampling. Typically, BNN use F (ω, θ) = −L (ω, θ) as the optimization objective and employ mini- batch gradien",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c20",
+    "text": "pically, BNN use F (ω, θ) = −L (ω, θ) as the optimization objective and employ mini- batch gradient descent optimization method. For each epoch of training, D is randomly divided into M subsets of equal size D 1, D 2, …, D M, and the cost for each minibatch can be defined as: F m(ω, θ) = αmKL(qθ(ω)‖p(ω)) −1 K ∑K k=1 log p ( D m ⃒⃒ω(k)) (6) where αm ∈[0, 1] and ∑M m=1αm = 1, which ensures that EM [∑M m=1F m(ω, θ) ] = F (ω, θ). With F m(ω, θ) as the optimization objective for a random minibatch D m, the variational posterior close to the true pos­ terior can be obtained by updating the parameters μ0 and ρ0. 2.2. Related work 1) Variational attention mechanism: Variational attention was pio­ neered for computer vision and natural language processing. In 2020, a Bayesian attention modu",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c21",
+    "text": "pio­ neered for computer vision and natural language processing. In 2020, a Bayesian attention module was proposed by Fan et al. (2020) for graph node classification and language understanding, which mitigates the failure risk of deep models in domain shift scenarios by providing more accurate uncertainty estimates. In 2021, Zhang et al. (2021) designed a Bayesian belief attention module for uncertainty estimation tasks in neural machine translation and visual question answering, and showed great potential for applications. Subse­ quently, variational attention was introduced to mechanical fault diagnosis. In 2022, Li et al. (2024) developed an interpretable vari­ ational attention-based Transformer network and demonstrated that the interpretability of variational attention can be",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c22",
+    "text": "sed Transformer network and demonstrated that the interpretability of variational attention can be used to improve diagnostic accuracy. In 2024, Xiao et al. (2024) proposed a Bayesian Transformer model with variational self-attention, which is a strongly generalizable diagnostic model that can be applied to various domain shift scenarios as well as small dataset scenarios. However, the above two application cases of variational attention in fault diagnosis focused only on its effect on model accuracy, ignoring its potential improvement in uncertainty estimation. In 2024, Xiao et al. (2023) proposed to apply the uncertainty-aware property of variational attention to Transformer and constructed a probabilistic Bayesian Transformer model for trustworthy fault diagnosis, which is v",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c23",
+    "text": "constructed a probabilistic Bayesian Transformer model for trustworthy fault diagnosis, which is validated in OOD scenarios and distribution shift scenarios. However (Xiao et al., 2023), did not quantitatively assess the quality of the estimated uncertainty, and the judgment of whether the sample is ID or OOD is still relatively preliminary and not explicitly decided by setting an appropriate uncertainty threshold. In addition, all the above attention randomization methods require adding customized structures to the original attention, and all are specific to self-attention and not to other types of attention. In contrast, the proposed method is highly universal and architecture-agnostic; it applies to various popular attention mechanisms and is thus easier to deploy in deep mo",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c24",
+    "text": "nostic; it applies to various popular attention mechanisms and is thus easier to deploy in deep models. 2) Uncertainty estimation for OOD detection in fault diagnosis: OOD detection methods in deep learning are mainly categorized into reconstruction-based, softmax output-based, and uncertainty-based ones. Uncertainty-based methods have recently attracted much attention in fault diagnosis, with Bayesian learning being the most common way for uncertainty quantification. In 2022, Zhou et al. (2022) proposed a probabilistic Bayesian convolutional neural network (CNN), which not only estimates the total uncertainty of the results but also separates from it the model uncertainty representing domain shifts. However, like (Xiao et al., 2023), it misses a quanti­ tative assessment of the",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c25",
+    "text": "ting domain shifts. However, like (Xiao et al., 2023), it misses a quanti­ tative assessment of the quality of the estimated uncertainty and an explicit determination of whether a sample is ID or OOD. Deep ensemble has emerged as an effective Bayesian approximation, of­ fering easier optimization and reduced dependence on precise prior distribution. In 2022, Han et al. (Han and Li, 2022) developed an uncertainty-aware deep ensemble network consisting of three stan­ dard CNNs, one Resnet, and one inception network, and demon­ strated that the ensemble network has higher quality of uncertainty estimation compared to any of the ensemble members. In 2024, Zhang et al. (2024) used multiple deep models with different acti­ vation functions to form an initial ensemble model, and recon­ str",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c26",
+    "text": "deep models with different acti­ vation functions to form an initial ensemble model, and recon­ structed the ensemble model by selecting better ensemble members from them via max consistency and min similarity guided criterion. Despite the many advantages of ensemble learning, its performance depends on the diversity of model structures and parameters of ensemble members, posing challenges in network design (Zhang et al., 2019). Moreover, constructing ensemble networks inevitably increases model capacity and memory consumption. Evidential learning is another commonly used uncertainty estimation method in addition to Bayesian learning, characterized by efficient inference and no need to explicitly define a prior distribution. In 2023, Zhou et al. (2023) proposed a risk-calibrated",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c27",
+    "text": "d to explicitly define a prior distribution. In 2023, Zhou et al. (2023) proposed a risk-calibrated evidential loss to replace the point estimate prediction from softmax output with a Dirichlet dis­ tribution, thus converting a CNN to an uncertainty-aware evidential CNN. However, it should be noted that evidential learning has a weaker theoretical interpretation of its results compared to Bayesian learning, and that it has difficulty in clearly distinguishing between model uncertainty and data uncertainty. 3. Proposed method This section first describes the model structure and operation flow of the proposed DVAN in Section 3.1, and then introduces its key compo­ nents in turn in Sections 3.2 to 3.6. 3.1. Model structure and operation flow of DVAN As shown in Fig. 1, a DVAN model for",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c28",
+    "text": "ons 3.2 to 3.6. 3.1. Model structure and operation flow of DVAN As shown in Fig. 1, a DVAN model for trustworthy mechanical fault diagnosis is established, and its operational process can be summarized as follows: 1) Data acquisition: Collect vibration signals when the machine is in predetermined fault modes and use them to construct training, validation, and test samples in the following way. First, some fault classes are selected as “seen class”, whose signals will be used to construct training, validation and test samples. Then, some other fault classes are selected as “unseen class” and the signals of these classes will be used to construct test samples only. For each class of signals labeled as “seen class”, we sequentially intercept two seg­ ments along the signal sequence",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p3_c29",
+    "text": "signals labeled as “seen class”, we sequentially intercept two seg­ ments along the signal sequence in a certain proportion, one of which is further divided into training and validation signals by cross vali­ dation, and the other segment is only for test signals. This way of data segmentation ensures that there is no data leakage as well as Y. Xiao et al. Engineering Applications of Artiϧcial Intelligence 157 (2025) 111386 3",
+    "source": "data/raw/test.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p4_c30",
+    "text": "conforming to practical engineering. The resulting training and validation samples include only ID samples labeled “seen class”, while the test samples include ID samples labeled “seen class” and OOD samples labeled “unseen class”. 2) Training phase: Train DVAN with the defined optimization objective (See Section 3.4) using ID training samples. As can be observed in Fig. 1, DVAN consists of a convolutional layer, a pooling layer, a DVAN encoder stacked by L DVAN blocks, and a classifier stacked by multiple linear layers. Specifically, DVAN block is composed of a convolutional layer, a batch normalization layer, a ReLU activation function, a residual connection, and any one of the designed varia­ tional attention modules (See Section 3.2). 3) Threshold setting: The ID validation sa",
+    "source": "data/raw/test.pdf",
+    "page": 4,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p4_c31",
+    "text": "signed varia­ tional attention modules (See Section 3.2). 3) Threshold setting: The ID validation samples are fed into the trained DVAN to determine the uncertainty threshold (See Section 3.6). 4) Inference phase: The test samples are fed into the trained DVAN to obtain their model uncertainty and predicted labels (See Section 3.5). 5) Uncertainty Analysis: The model uncertainty of the test sample is compared with the uncertainty threshold to determine whether it is ID or OOD. If the sample is identified as ID, its diagnostic result will be considered trustworthy. If the sample is identified as OOD, its diagnostic result will be considered untrustworthy and further in­ vestigations by researchers will be requested to produce the trust­ worthy diagnostic result. 3.2. Architecture-agn",
+    "source": "data/raw/test.pdf",
+    "page": 4,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p4_c32",
+    "text": "researchers will be requested to produce the trust­ worthy diagnostic result. 3.2. Architecture-agnostic variational attention The most essential component of DVAN is the proposed variational attention, which is architecture-independent and thus can be designed based on various popular deterministic attention modules. In this paper, we use three deterministic attention modules that are commonly used in fault diagnosis and of different types to construct variational attention, including squeeze-and-excitation attention (SE), self-attention mecha­ nism (SA), and convolutional block attention module (CBAM). The three Fig. 1. Model structure and operation flow of DVAN. Y. Xiao et al.",
+    "source": "data/raw/test.pdf",
+    "page": 4,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p5_c33",
+    "text": "resulting attention mechanisms are referred to as variational SE (VSE), variational SA (VSA), and variational CBAM (VCBAM), with the struc­ tures shown in Fig. 2. Unlike the traditional deterministic SE, SA and CBAM where the parameters of the convolutional and linear layers are fixed values, pa­ rameters of the proposed attention modules are random variables drawn from the learned posterior distribution. Fig. 3 illustrates the differences between the traditional and the proposed attention modules. In addi­ tion, we embed a developed MCSL before the weight regularization functions (softmax, sigmoid) of each attention module to further ensure the diversity of the weights generated by the attention modules obtained through MC sampling. The details of the MCSL are described in Section",
+    "source": "data/raw/test.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p5_c34",
+    "text": "e attention modules obtained through MC sampling. The details of the MCSL are described in Section 3.3. In this paper, the posterior and prior distributions of the attention module parameters are also chosen as diagonal Gaussian distributions. Therefore, a sample of the module parameters can also be obtained by sampling a unit Gaussian and shifting it by the mean μ0 while scaling it by the standard deviation σ0. The variational parameters θ = (μ0,ρ0), in which σ0 = log(1 + exp(ρ0)). The explanations of the significant sym­ bols used in this section are listed in Table 1. 3.3. Development of MCSL The proposed MCSL is an important component of the variational attention. In practice, it is usually insufficient to allow the attention modules to generate diverse weights simply by rando",
+    "source": "data/raw/test.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p5_c35",
+    "text": "is usually insufficient to allow the attention modules to generate diverse weights simply by randomizing their parameter. Yet, the performance of variational attention is highly correlated with the diversity of attention weights (Blundell et al., 2015). Therefore, MCSL is developed to alleviate this problem. In this section, an example is given with VSE. We first trained DVAN without MCSL, and then constructed multiple VSEs by MC sampling during the inference phase. As shown in Fig. 4(a), these VSEs without MCSL have the attention weights that are mainly concentrated within (0.4,0.6) and (0.8,1.0), lacking diversity. Inspired by Batch Shaping (Bejnordi et al., 2019), MCSL imposes a prior constraint on the unnormalized attention weights (weights not processed by the weight regul",
+    "source": "data/raw/test.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p5_c36",
+    "text": "a prior constraint on the unnormalized attention weights (weights not processed by the weight regularization function) generated by these modules, encouraging their diversity by matching the distribution of the unnormalized weights to a pre-specified prior distribution. The reason for choosing to constrain the unnormalized weights is that they have a wider range of values than the normalized weights and therefore the choice of prior distribution is not restricted. In this paper, the prior distribution of the unnormalized weights is chosen as Gaussian distribution controlled by the pre-specified mean μp and standard deviation σp. Assume that the unnormalized weights generated by VSE obtained at the kth sampling is S(k) ∈RB×N, where B is the batch size, and N repre­ sents the numbe",
+    "source": "data/raw/test.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p5_c37",
+    "text": "obtained at the kth sampling is S(k) ∈RB×N, where B is the batch size, and N repre­ sents the number of channels. The weights generated by VSEs obtained by sampling the posterior for K times are concatenated to acquire S ∈RB×K×N. The goal of MCSL is to compute the distribution discrepancy between the given prior and the vector Si,:,j ∈RK (1≤i ≤B, 1≤j ≤N) consisting of all unnormalized weights generated by these VSEs for each sample at each channel. To achieve this, this paper considers the same Cram´er-von-Mises criterion as in (Bejnordi et al., 2019), which calcu­ lates the L2 distance between the cumulative probability distribution (CDF) of prior and the empirical CDF of Si,:,j. We first sort Si,:,j from smallest to largest to obtain S∗ i,:,j, the distribution discrepancy betwee",
+    "source": "data/raw/test.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p5_c38",
+    "text": "first sort Si,:,j from smallest to largest to obtain S∗ i,:,j, the distribution discrepancy between the prior and Si,:,j can then be defined as: φi,j = 1 K ∑ K k=1 [ k K + 1 −F ( S∗ i,k,j )]2 (7) where F(X) is the CDF of the Gaussian prior, which is defined as: F(X) = P(x ≤X) = 1 2 + 1 2 erf ( X −μp ̅̅̅ 2 √ σp ) (8) where erf( ⋅) is the differentiable error function. Since neural networks usually use mini-batch gradient descent for optimization, we need to calculate the weight distribution discrepancy loss for a random mini­ batch: φ = 1 BN ∑ B i=1 ∑ N j=1 φi,j (9) The distribution discrepancy between the prior and the unnormal­ ized attention weights can be reduced by minimizing φ during the training phase. As shown in Fig. 4(b), in the inference phase, the attention weights",
+    "source": "data/raw/test.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p5_c39",
+    "text": "φ during the training phase. As shown in Fig. 4(b), in the inference phase, the attention weights generated by VSE trained using MCSL are normally Fig. 2. Structures of VSE, VSA, and VCBAM. Y. Xiao et al. Engineering Applications of Artiϧcial Intelligence 157 (2025) 111386 5",
+    "source": "data/raw/test.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p6_c40",
+    "text": "distributed within (0,1) and therefore have a relatively strong diversity. 3.4. Derivation of optimization objective In this subsection, we derive the optimization objective of DVAN and show how to update its parameters. Let the parameters from all attention modules be ω, and all other fixed parameters of DVAN (not including those from attention modules) be ϖ. According to Eq. (6) and Eq. (9), the optimization objective of DVAN for a random minibatch D m can be defined as: F m(ϖ, ω, θ) = αmKL(qθ(ω)‖p(ω)) + β 1 L ∑L l=1φl −1 K ∑K k=1 log p ( D m ⃒⃒ϖ, ω(k)) (10) where β is a trade-off parameter, φl represents the weight distribution discrepancy loss from the lth attention module (1≤l ≤L), L denotes the number of attention modules, and −log p(D |ϖ, ω) is equivalent to the cross entr",
+    "source": "data/raw/test.pdf",
+    "page": 6,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p6_c41",
+    "text": "L), L denotes the number of attention modules, and −log p(D |ϖ, ω) is equivalent to the cross entropy loss. There are many ways to set αm, and this paper adopts the scheme as in (Blundell et al., 2015): αm = 2M−m 2M−1. This is because the first few minibatches have little impact on the model parameters and therefore the complexity cost should be of high importance. However, as the model learns more data, the impact of the data on the model pa­ rameters increases and accordingly the importance of the complexity cost should be reduced. Eq. (10) implies that it is essential for all the parameters of DVAN to effectively align with the data, ensuring a good fit, and the discrepancy between the posterior distribution of the attention module parameters and their prior distribution shoul",
+    "source": "data/raw/test.pdf",
+    "page": 6,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p6_c42",
+    "text": "en the posterior distribution of the attention module parameters and their prior distribution should be minimized. Furthermore, the discrepancy between the distribution of unnormalized attention weights and their prior distribution should also be reduced. For the fixed pa­ rameters ϖ, it is updated as follows: Δϖ = ∂F m(ϖ, ω, θ) ∂ϖ ϖ←ϖ −ηΔϖ (11) Since the random parameters ω is obtained by the reparameteriza­ tion trick in Eq. (3), the actual parameters to be updated are the varia­ tional parameters μ0 and ρ0, which are updated in the following equations: Fig. 3. Module parameter difference between deterministic attention and variation attention. Table 1 Explanations of significant symbols. Symbol Explanation μ0, ρ0 Parameters to be optimized, controlling the posterior distribution",
+    "source": "data/raw/test.pdf",
+    "page": 6,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p6_c43",
+    "text": "ymbols. Symbol Explanation μ0, ρ0 Parameters to be optimized, controlling the posterior distribution of the attention module parameters μ1, σ1 Hyperparameters, controlling the prior distribution of the attention module parameters μp, σp Hyperparameters, controlling the prior distribution of the unnormalized attention weights ω Attention module parameters obtained through μ0, ρ0 ϖ All other fixed parameters of DVAN excluding the attention module parameters Fig. 4. Distribution histograms of attention weights from VSE with and without MCSL. Y. Xiao et al. Enginee",
+    "source": "data/raw/test.pdf",
+    "page": 6,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p7_c44",
+    "text": "Δμ0 = ∂F m(ϖ, ω, θ) ∂ω + ∂F m(ϖ, ω, θ) ∂μ0 Δρ0 = ∂F m(ϖ, ω, θ) ∂ω ε 1 + exp(−ρ0) + ∂F m(ϖ, ω, θ) ∂ρ0 μ0←μ0 −ηΔμ0 ρ0←ρ0 −ηΔρ0 (12) By taking Eq. (10) as the optimization objective of DVAN and updating its parameters with Eq. (11) and Eq. (12), a fault diagnostic model with uncertainty-aware capability is obtained. 3.5. Inference and uncertainty estimation In this subsection, we show how to use a trained DVAN to obtain predictive labels and uncertainty estimates for test samples. In the inference phase, DVAN can construct K different attention modules by randomly drawing K MC samples from qθ(ω). These K attention modules generate diverse attention weights to make DVAN focus on different parts of test sample x and thus output K stochastic softmax probabilistic vectors. The mean of th",
+    "source": "data/raw/test.pdf",
+    "page": 7,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p7_c45",
+    "text": "parts of test sample x and thus output K stochastic softmax probabilistic vectors. The mean of these K vectors is the expected softmax probabilistic vector and the index of its largest element is the predicted label. A commonly used measure for quantifying model uncertainty is the expected KL divergence (EKL), which aims to calculate the expected divergence between the stochastic softmax output and the expected softmax output. Let the kth stochastic softmax output be ̂y(k) ∈RC and the mean of these K outputs be y, where C is the number of seen fault classes. The EKL can be defined as: Eq(ω|D )[KL(y‖̂y)] = 1 K ∑ K k=1 ∑ C c=1 yc log ( yc ̂y (k) c ) (13) where ̂y(k) c and yc denote the cth entry in the probabilistic vectors ̂y(k) and y respectively. In this paper, the EKL is used",
+    "source": "data/raw/test.pdf",
+    "page": 7,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p7_c46",
+    "text": "the cth entry in the probabilistic vectors ̂y(k) and y respectively. In this paper, the EKL is used to estimate the model uncertainty of diagnostic results caused by distribution shifts. 3.6. Uncertainty threshold determination Although the uncertainty estimates for test samples are obtained, to automatically distinguish whether a test sample is ID or OOD, it is Fig. 5. Wind turbine planetary gearbox test rig from Tsinghua University. (a) Test rig; (b) Failure sun gears and planetary gears. Fig. 6. FAR and MAR of D-VSE, D-VSA and D-VCBAM on the pseudo-OOD validation set for different hyperparameters. Fig. 7. Loss curves of D-VSE, D-VSA and D-VCBAM on the training and ID validation sets. Y. Xiao et al.",
+    "source": "data/raw/test.pdf",
+    "page": 7,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c47",
+    "text": "necessary to set an uncertainty threshold, with samples with uncertainty below this threshold being ID and those above this threshold being OOD. Therefore, the required uncertainty threshold should be higher than the uncertainty of most ID samples and lower than those of most OOD samples. However, as the OOD samples are not observed during the training phase of the model, the uncertainty threshold can only be determined by the validation dataset consists of the ID samples. In this paper, the inter-quartile range (IQR) proximity rule is used to find the upper bound on the uncertainty of the ID samples, which is set as the uncertainty threshold. The upper bound on uncertainty is calculated as follows: IQR = Q3 −Q1 Upper bound = Q3 + 1.5IQR (14) where the Q1 and Q3 are the first q",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c48",
+    "text": "lated as follows: IQR = Q3 −Q1 Upper bound = Q3 + 1.5IQR (14) where the Q1 and Q3 are the first quartile and third quartile of the un­ certainty of the ID validation dataset, respectively. The uncertainty threshold determined using the IQR proximity rule ensures that the diagnostic results of most ID samples are considered trustworthy and allows OOD samples with high uncertainty to be detected. 4. Experimental study In this paper, three types of variational attention are designed, including VSE, VSA, and VCBAM. We refer to DVAN with these three variational attentions as D-VSE, D-VSA, and D-VCBAM, respectively. This section aims to validate the effectiveness of the proposed three types of DVAN in the OOD detection tasks of mechanical fault diagnosis, using bearing and gearbox fau",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c49",
+    "text": "pes of DVAN in the OOD detection tasks of mechanical fault diagnosis, using bearing and gearbox fault diagnosis as two cases. The DVAN encoder used in the experiments comprises three DVAN blocks, and the classifier has only one fully-connected layer. To demonstrate the supe­ riority of variational attention, we conduct ablation studies by reducing the variational attention of DVAN to its original deterministic attention. The resulting three networks are called D-SE, D-SA, and D-CBAM, and they use the softmax output-based method (Yang et al., 2021) to OOD detection. Also, to verify the necessity of embedding MCSL in the vari­ ational attention, we conduct ablation studies by removing MCSL from the variational attention. The resulting three networks are called D-VSE w/o MCSL, D-VSA",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c50",
+    "text": "CSL from the variational attention. The resulting three networks are called D-VSE w/o MCSL, D-VSA w/o MCSL, and D-VCBAM w/o MCSL. Moreover, the proposed D-VSE, D-VSA, and D-VCBAM are compared with three pop­ ular ones: (1) Softmax output-based method, which is a baseline method that distinguishes ID and OOD samples by the entropy of softmax output. (2) MC dropout (Gal and Ghahramani, 2015), which is an approximate Bayesian method that obtains the expected softmax output for uncer­ tainty estimation by enabling dropout layers during inference and per­ forming multiple forward propagations. (3) Deep ensemble, consisting of a D-SE, a D-SA, a D-CBAM, a bi-directional long short-term memory (Zhao et al., 2020), and a 7-layer standard CNN. Additionally, the fast gradient sign method (Go",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c51",
+    "text": "y (Zhao et al., 2020), and a 7-layer standard CNN. Additionally, the fast gradient sign method (Goodfellow et al., 2015), (Lakshminarayanan et al., 2017) is used for adversarial training of each model. We use three measures, accuracy, false alarm rate (FAR) and missing alarm rate (MAR), to fully evaluate these methods. Note that in our experiments, all OOD samples are labeled as “OOD”. Thus, accuracy assesses whether the proposed method can label ID samples as their true class and OOD samples as “OOD”. The definitions of the FAR and MAR are as follows: FAR = FP FP + TN MAR = FN TP + FN (15) where TP, TN, FP, and FN represent the number of true positives, true negatives, false positives, and false negatives, respectively, the positives refer to the OOD samples, and the negatives",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c52",
+    "text": "tives, and false negatives, respectively, the positives refer to the OOD samples, and the negatives denote the ID samples. Lower FAR and MAR mean that the model has better OOD detection performance. To avoid experimental chance, each method performs five replicate trials in each OOD detection task. The main hyperparameters of the three types of DVAN are listed in Table 2. In particular, the initial learning rate is 0.001 with a decay (multiplied by 0.1) in the epoch 15 and 25. For the fixed parameters ϖ, we use the commonly used weight decay to optimize it to avoid over- fitting. However, for the random attention module parameters ω, we recommend not using the weight decay to optimize it. The reason for this is that the L2 regularization constraint used for weight decay may conf",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c53",
+    "text": "ze it. The reason for this is that the L2 regularization constraint used for weight decay may conflict with the complexity cost. Theoretically, the higher the number of MC samples K, the more accurate the approximation of the posterior distribution, but also significantly more computationally expensive. Typically, taking K in the range of 10–20 is sufficient. The parameters σ1 and σp impose the prior constraints on the attention weights and are the two parameters that have the greatest impact on the OOD detection performance of the proposed method. If they are chosen too high, they may overestimate the uncertainty of the results and vice versa. For this reason, we construct a pseudo-OOD validation set by applying Gaussian noise with a signal-to-noise ratio of −5 dB on the ID val",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c54",
+    "text": "o-OOD validation set by applying Gaussian noise with a signal-to-noise ratio of −5 dB on the ID validation set of Case 1, and select the parameters σ1 ∈{0.1, 0.2} and σp ∈{1, 2} by monitoring FAR and MAR of the proposed method on this pseudo-OOD validation set. 4.1. Case 1: OOD detection tasks for gearbox fault diagnosis 1) Data preparation: In Case 1, the dataset used is a wind turbine planetary gearbox fault dataset from Tsinghua University (Han et al., 2019). The test rig shown in Fig. 5(a) for the data collection exper­ iments is driven by a motor at the input end and connected to the wind turbine at the output end. Some of the failure gears assembled in the gearbox are shown in Fig. 5(b). The data collection experi­ ments consider a total of nine different health states of gea",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c55",
+    "text": "Fig. 5(b). The data collection experi­ ments consider a total of nine different health states of gearbox, including the normal state, four failure states of sun gears, and four failure states of planetary gears, the details of which are listed in Table 3. The accelerators with a sampling frequency of 20Hz are mounted on the X and Y directions of the gearbox housing to collect vibration signals in different directions. The speed of the motor varies between 15Hz and 40Hz with an interval of 1Hz, so that the signals are collected under 26 different operating conditions. In this paper, vibration signals with condition of 40Hz and from the Y direction are used. The fault classes labeled as 0, 1, 2, 3, 4 are considered Table 2 Main hyperparameters of DVAN. Hyperparameter Value Hyperpar",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p8_c56",
+    "text": "s 0, 1, 2, 3, 4 are considered Table 2 Main hyperparameters of DVAN. Hyperparameter Value Hyperparameter Value β 1.0 K 20 batch size 128 initial learning rate 1 × 10−3 weight decay 1 × 10−5 number of epochs 30 μ1 0 σ1 {0.1, 0.2} μp 0 σp {1, 2} Fig. 8. Accuracy of each method under different OOD detection tasks in Case 1. Y. Xiao et al. Engineering Applications of Artiϧcial Intelligence 157 (2025) 111386 8",
+    "source": "data/raw/test.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c57",
+    "text": "as the “seen class”, and the fault classes labeled as 5, 6, 7, 8 are considered as the “unseen class”. After intercepting the training, vali­ dation, and test signals according to the method in Section 3.1, the corresponding samples are then intercepted, each of which is 1024 in length. The training samples are augmented by applying random scale, random stretch, and random crop. The zero-mean normalization is performed for each sample based on the mean and standard deviation of the 1024 signal values it contains. Table 4 lists the resulting number of training, validation, and test samples, as well as the four OOD detection tasks set depending on the fault class of the OOD samples. Note that the number of training, validation, or test samples is evenly distributed between each hea",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c58",
+    "text": "te that the number of training, validation, or test samples is evenly distributed between each health state. 2) Selection of hyperparameters σ1 and σp: Fig. 6 illustrates the FAR and MAR of D-VSE, D-VSA, and D-VCBAM on the pseudo-OOD validation set when σ1 and σp take different values. To obtain lower FAR and MAR, we set the hyperparameter combination (σ1, σp) of D-VSE to (0.1, 1), (σ1, σp) of D-VSA to (0.2, 2), and (σ1, σp) of D- VCBAM to (0.2, 1). Under these hyperparameter combinations, the loss variations of these three methods on the training and ID vali­ dation sets are shown in Fig. 7, including the cross-entropy loss, the KL divergence loss, and the MCSL loss. It can be found that each loss term tends to converge. In addition, it is worth mentioning that the MCSL loss o",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c59",
+    "text": "nd that each loss term tends to converge. In addition, it is worth mentioning that the MCSL loss of D-VCBAM undergoes an obvious process of increasing and then decreasing, which may suggest that the distribution of the sampled attention weight values tends to concentrate without the use of the MCSL layer, leading to a larger difference between the dis­ tribution and the Gaussian prior. The use of the MCSL mitigates this tendency. 3) OOD detection results and analysis: All methods achieve near- perfect accuracy (~100 %) on OOD-free test data, but exhibit per­ formance degradation when handling OOD samples as shown in Fig. 8. Specifically, D-VCBAM shows the highest diagnostic accuracy in tasks T1-T3 with D-VSE ranking second, and D-VSE has the highest accuracy in task T0 with D-VCB",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c60",
+    "text": "in tasks T1-T3 with D-VSE ranking second, and D-VSE has the highest accuracy in task T0 with D-VCBAM following. Although the accuracy of D-VSA is much lower than that of D-VSE, D-VCBAM, and deep ensemble in all four tasks (especially in task T3, where D-VSA has the lowest accuracy), it achieves higher accuracy than that of softmax output-based method (baseline) in tasks T0-T2. These results fully demonstrate the universality of the proposed method, which em­ powers various types of attention mechanisms with uncertainty perception, thus enabling them to obtain OOD detection performance superior to existing methods. However, it is worth mentioning that although the proposed method is architecture- agnostic, the strength of the constructed variational attention is closely related",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c61",
+    "text": "architecture- agnostic, the strength of the constructed variational attention is closely related to the architecture of the original deterministic attention and its ability to model fault features. D-VCBAM achieves the best performance due to the ability of CBAM to capture both inter-channel and inter-position relationships of fault features, as well as its adaptability to CNN. SE only considers inter-channel re­ lationships and thus D-VSE offers the next best performance. In contrast, SA constructed in this paper may not be well adapted to the convolutional blocks used, so D-VSA performs much less well than D- VCBAM and D-VSE. Table 5 shows the FAR and MAR of each method for the four OOD detection tasks. It can be found that the FAR of the proposed variational attention is muc",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c62",
+    "text": "our OOD detection tasks. It can be found that the FAR of the proposed variational attention is much lower than that of other methods, with D-VSE being the lowest in task T0 and D-VCBAM being the lowest in tasks T1-T3, but their MAR is not the lowest. Deep ensemble has the lowest MAR in all four tasks, with its MAR in tasks T1 and T2 being 0 %, but its FAR is significantly higher than that of the proposed methods. These experi­ mental results imply that the proposed variational attention in Case 1 may be more conservative in estimating the uncertainty of the samples, thus missing some OOD samples, but also reducing the number of mis­ judged ID samples. In contrast, deep ensemble may tend to assign high uncertainty to test samples, so that it misses fewer OOD samples, but also misj",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c63",
+    "text": "end to assign high uncertainty to test samples, so that it misses fewer OOD samples, but also misjudges more ID samples as OOD samples. Specifically, in task T1, both D-VCBAM and deep ensemble have 0 % MAR, but D-VCBAM has a lower FAR; in task T0, D-VCBAM reduces its FAR by 4.5 % while its MAR is only 1.2 % higher than that of deep ensemble, so it can be assumed that the proposed method outperforms deep ensemble in tasks T0 and T1. For tasks T2 and T3, considering that the OOD detection task em­ phasizes on finding more OOD samples within an acceptable FAR range, it may be necessary to determine an acceptable FAR range or to use additional metrics to more fully evaluate the advantages and disad­ vantages of the proposed methods and deep ensemble. Fig. 9 shows the classification de",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c64",
+    "text": "es and disad­ vantages of the proposed methods and deep ensemble. Fig. 9 shows the classification details of each method in task T1 through the confusion matrix. It can be found that all the methods do not label samples from one seen fault class as other seen fault classes, but may misdiagnose them as OOD, or misdiagnose few OOD samples as seen fault classes. The misclassification of ID samples as OOD samples is difficult to avoid which stems from the limitations of the IQR proximity rule used in this paper. Fortunately, the vast majority of true OOD Table 3 Details of nine gearbox health states in Case 1. Health states Description Label Normal ​ 0 Sun gear tooth crack Depth of crack is 1/8 dedendum 1 Sun gear tooth crack Depth of crack is 1/4 dedendum 2 Sun gear tooth crack Depth",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c65",
+    "text": "is 1/8 dedendum 1 Sun gear tooth crack Depth of crack is 1/4 dedendum 2 Sun gear tooth crack Depth of crack is 1/2 dedendum 3 Sun gear tooth broken 1/3 of the tooth depth is cut 4 Planetary gear tooth crack Depth of crack is 1/8 dedendum 5 Planetary gear tooth crack Depth of crack is 1/4 dedendum 6 Planetary gear tooth crack Depth of crack is 1/2 dedendum 7 Planetary gear tooth broken 1/3 of the tooth depth is cut 8 Table 4 Description of four OOD detection tasks in Case 1. Tasks Seen fault classes Unseen fault classes Number of training samples Number of validation samples Number of test samples T0 0, 1, 2, 3, 4 5a 5 × 200 5 × 50 6 × 50 T1 0, 1, 2, 3, 4 6a 5 × 200 5 × 50 6 × 50 T2 0, 1, 2, 3, 4 7a 5 × 200 5 × 50 6 × 50 T3 0, 1, 2, 3, 4 8a 5 × 200 5 × 50 6 × 50 a In practice, the true la",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p9_c66",
+    "text": ", 3, 4 7a 5 × 200 5 × 50 6 × 50 T3 0, 1, 2, 3, 4 8a 5 × 200 5 × 50 6 × 50 a In practice, the true labels of samples from all unseen fault classes are “OOD”. Y. Xiao et al. Engineering Applications of Artiϧcial Intelligence 157 (2025) 111386 9",
+    "source": "data/raw/test.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p10_c67",
+    "text": "samples can be detected by the proposed methods, which is vital for mechanical fault diagnosis. Misdiagnosing the state of equipment in a seen fault mode as an unseen fault mode can increase the cost of manual intervention. However, misdiagnosing the state of equipment in an un­ seen fault mode as normal or other fault modes exposes it to potential failure risks and may cause greater financial losses. Therefore, it can be concluded that the proposed method effectively improves the reliability of the intelligent diagnostic model and contributes to the trustworthy fault diagnosis. 4) Uncertainty analysis for ID and OOD samples: Fig. 10 illustrates the distribution of uncertainty for the ID samples and OOD samples estimated by each method in task T1. It can be observed that in each",
+    "source": "data/raw/test.pdf",
+    "page": 10,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p10_c68",
+    "text": "he ID samples and OOD samples estimated by each method in task T1. It can be observed that in each method, the uncertainty of most of the OOD samples is significantly higher than that of the ID samples. The uncertainty distribution of the ID samples is more peaked and concentrated around 0, whereas the uncertainty distribution of the OOD samples is flatter. In particular, the overlap between the uncertainty distribution of the OOD samples and the uncertainty distribution of the ID samples for deep ensemble and D-VCBAM is significantly less than that of the other methods, and thus these two methods provide a stronger distinction between the ID samples and the OOD samples. 5) Alation studies: Fig. 11 shows the FAR and MAR of each method in ablation studies. It can be found that wh",
+    "source": "data/raw/test.pdf",
+    "page": 10,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p10_c69",
+    "text": "studies: Fig. 11 shows the FAR and MAR of each method in ablation studies. It can be found that whether for the more powerful CBAM and SE, or the weaker SA, their versions of variational attention outperform their versions of deterministic attention, as demonstrated by the lower FAR and MAR of variational attention. This fully validates the superiority of variational attention compared to deterministic attention. In addition, in each task, the FAR of variational attention with MCSL is significantly lower than that of the variational attention without MCSL. Although in some tasks not using MCSL results in a lower MAR for variational attention, this comes at the cost of a significantly higher FAR. Therefore, it can be argued that embedding MCSL in variational attention is effecti",
+    "source": "data/raw/test.pdf",
+    "page": 10,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p10_c70",
+    "text": "tly higher FAR. Therefore, it can be argued that embedding MCSL in variational attention is effective. 4.2. Case 2: OOD detection tasks for bearing fault diagnosis 1) Data preparation: The dataset used in Case 2 is an electric loco­ motive bearing fault dataset (Shao et al., 2018). Figs. 12 and 13 show the test rig and the three failure bearings used for the data collection experiments respectively. The accelerometer is mounted on the load module adjacently to acquire the vibration signals for various oper­ ating conditions at a sampling frequency of 12.8 kHz. In this paper, eight bearing health states are created for experiments Table 5 FAR (%) and MAR (%) of each method for four OOD detection tasks in Case 1. Methods T0 T1 T2 T3 FAR MAR FAR MAR FAR MAR FAR MAR D-VSE 6.3 ± 2.1 10.0",
+    "source": "data/raw/test.pdf",
+    "page": 10,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p10_c71",
+    "text": "detection tasks in Case 1. Methods T0 T1 T2 T3 FAR MAR FAR MAR FAR MAR FAR MAR D-VSE 6.3 ± 2.1 10.0 ± 8.0 9.4 ± 3.0 0.8 ± 1.1 8.6 ± 0.9 22.0 ± 9.7 9.1 ± 3.9 20.3 ± 10.2 D-VSA 13.8 ± 2.3 14.0 ± 8.7 12.9 ± 3.8 8.4 ± 11.0 15.4 ± 2.6 4.4 ± 4.6 16.4 ± 4.5 21.2 ± 13.4 D-VCBAM 7.7 ± 2.2 8.8 ± 5.4 8.1 ± 1.6 0.0 ± 0.0 7.12 ± 2.2 4.4 ± 3.9 8.8 ± 1.7 9.2 ± 3.9 Softmax output 13.8 ± 1.9 16.0 ± 8.1 14.9 ± 2.4 6.0 ± 2.0 14.8 ± 2.1 22.0 ± 23.6 13.1 ± 1.3 16.0 ± 10.5 MC dropout 13.8 ± 1.6 11.6 ± 4.1 13.9 ± 2.9 4.0 ± 3.5 12.7 ± 0.6 12.8 ± 14.9 12.7 ± 3.1 10.0 ± 2.8 Deep ensemble 12.2 ± 0.8 7.6 ± 4.3 10.5 ± 1.1 0.0 ± 0.0 12.2 ± 0.8 0.0 ± 0.0 13.1 ± 1.7 6.4 ± 4.6 Fig. 9. Confusion matrix of each method for task T1 in Case 1. Y. Xiao et al.",
+    "source": "data/raw/test.pdf",
+    "page": 10,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p12_c72",
+    "text": "by adjusting the rotational speed of motor and using bearings with different fault types, the details of which are listed in Table 6. The fault classes labeled as 0, 1, 2, 3, 4 are considered as the “seen class”, and the fault classes labeled as 5, 6, 7 are considered as the “unseen class”. The length of the samples and the preprocessing method used are the same as in Case 1. Table 7 lists the number of training, validation, and test samples, as well as the three OOD detection tasks set depending on the fault class of the OOD samples. 2) OOD detection results and analysis: Fig. 14 shows the accuracy of each method in the three OOD detection tasks. D-VCBAM and D-VSE continue to have the highest and second highest accuracy, with D- VSA remaining significantly less accurate than D-",
+    "source": "data/raw/test.pdf",
+    "page": 12,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p12_c73",
+    "text": "the highest and second highest accuracy, with D- VSA remaining significantly less accurate than D-VCBAM and D-VSE. This again suggests that using appropriate deterministic attention as the basic structure of variational attention is more helpful in enhancing the OOD detection performance of the model. Deep ensemble does not perform on par with the proposed methods as it did in Case 1, and its accuracy is even lower than that of the baseline method in tasks T1 and T2. These results demonstrate that the deep ensemble constructed in this paper has inferior robustness to the proposed variational attention. To enhance the performance of deep ensemble, then it is necessary to find multiple ensemble members with higher diversity of structures and parameters and excellent performance.",
+    "source": "data/raw/test.pdf",
+    "page": 12,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p12_c74",
+    "text": "ple ensemble members with higher diversity of structures and parameters and excellent performance. In contrast, for variational attention, it is often suffi­ cient to find a suitable deterministic attention as a basis. Table 8 lists the FAR and MAR of each method for the three OOD detection tasks. The FAR of the proposed D-VCBAM is significantly lower than that of the other methods. In addition, the MAR of D-VCBAM (close to 0 %) is quite close to that of deep ensemble in tasks T0 and T1, and the MAR of D-VCBAM is much lower than that of deep ensemble and still close to 0 % in tasks T2. These experimental results further demonstrate the superior OOD detection performance and strong robustness of the proposed method. Moreover, considering that the presence of a small number of misc",
+    "source": "data/raw/test.pdf",
+    "page": 12,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p12_c75",
+    "text": "obustness of the proposed method. Moreover, considering that the presence of a small number of misclassified ID samples is reasonable due to the limitations of IQR proximity rule, it can be assumed that the uncertainty estimates of the proposed method in Case 2 are nearly well- calibrated for both ID and OOD samples. Fig. 15 shows the confusion matrix of each method in task T0. It can be found that similar to Case 1, all methods do not categorize samples from one seen class as another seen class, but confuse ID samples with OOD samples. Neither D-VCBAM nor deep ensemble misses OOD sam­ ples, which is critical for safety-critical applications. However, D- VCBAM holds an absolute advantage in the number of misjudged ID samples, which can further reduce unnecessary manual interventio",
+    "source": "data/raw/test.pdf",
+    "page": 12,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p12_c76",
+    "text": "tage in the number of misjudged ID samples, which can further reduce unnecessary manual intervention and thus improve efficiency. 3) Uncertainty analysis for ID and OOD samples: Fig. 16 shows the uncertainty distributions for the ID samples and OOD samples pro­ vided by each method in task T0. Consistent with the previous analysis, the uncertainty distribution of the OOD samples and the uncertainty distribution of the ID samples are separated almost perfectly in D-VCBAM. In contrast, the two uncertainty distributions Fig. 12. Electric locomotive bearing test rig. Fig. 13. Three fault types of electric locomotive bearings. Fig. 14. Accuracy of each method under different OOD detection tasks in Case 2. Table 6 Description of eight different bearing health states in Case 2. Health s",
+    "source": "data/raw/test.pdf",
+    "page": 12,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p12_c77",
+    "text": "tasks in Case 2. Table 6 Description of eight different bearing health states in Case 2. Health states Rotational speed of motor (r/ min) Label Normal 490 0 Slightly outer race fault 490 1 Severe outer race fault 481 2 Roller fault 531 3 Inner race fault 498 4 Compound faults (outer race and inner race) 525 5 Compound faults (inner race and roller) 640 6 Compound faults (outer race and roller) 521 7 Y. Xiao et al. Engineering Applications of Artiϧcial Intelligence 157 (2025) 111386 12",
+    "source": "data/raw/test.pdf",
+    "page": 12,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p13_c78",
+    "text": "obtained by the other methods show a higher overlap, indicating that more ID samples and OOD samples are confused. 4) Ablation studies: Fig. 17 shows the FAR and MAR of each method in ablation studies. For SE, both the FAR and MAR of its version of variational attention are lower than those of its version of deter­ ministic attention, again demonstrating the superiority of variational attention. However, when MCSL is absent from the variational attention, it performs even worse than the deterministic attention. A similar phenomenon is also seen in SA. These results illustrate the effectiveness of MCSL for ensuring performance of variational attention. For CBAM, a performance ranking such that D-VCBAM is the best, D-VCBAM w/o MCSL is the second best, and D-CBAM is the last is main",
+    "source": "data/raw/test.pdf",
+    "page": 13,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p13_c79",
+    "text": "such that D-VCBAM is the best, D-VCBAM w/o MCSL is the second best, and D-CBAM is the last is maintained in all three tasks, which is consistent with expectations. 5. Conclusion In this paper, an uncertainty-aware DVAN model for OOD detection- assisted trustworthy fault diagnosis is proposed, with the following key conclusions: (1) Architecture-agnostic variational attention modules can be obtained by randomizing the parameters of popular attention mod­ ules, which enable uncertainty estimation of diagnostic results that is difficult to achieve with traditional deterministic attention. (2) The di­ versity of attention weights can be enhanced by matching the distribu­ tion of unnormalized attention weights to a predefined prior distribution. (3) Model uncertainty can effectively cha",
+    "source": "data/raw/test.pdf",
+    "page": 13,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p13_c80",
+    "text": "zed attention weights to a predefined prior distribution. (3) Model uncertainty can effectively characterize distri­ bution shifts and be used for determination of whether a sample is ID or OOD. In future, we will construct variational attention based on the state- of-the-art deterministic attentions to improve the OOD detection Table 8 FAR (%) and MAR (%) of each method for three OOD detection tasks in Case 2. Methods T0 T1 T2 FAR MAR FAR MAR FAR MAR D-VSE 7.6 ± 2.4 6.5 ± 5.0 9.3 ± 2.1 3.5 ± 3.4 10.2 ± 3.73 3.5 ± 4.4 D-VSA 14.8 ± 3.7 2.0 ± 4.0 12.3 ± 3.3 4.5 ± 5.7 13.1 ± 3.6 12.5 ± 7.2 D-VCBAM 4.3 ± 1.9 0.0 ± 0.0 6.6 ± 2.7 0.5 ± 1.0 7.2 ± 4.0 1.0 ± 1.2 Softmax output 12.7 ± 1.5 4.0 ± 3.7 13.6 ± 1.2 2.5 ± 3.8 13.6 ± 2.9 5.5 ± 6.2 MC dropout 13.8 ± 1.3 4.0 ± 5.7 14.5 ± 2.7 4.5 ± 4.1 15",
+    "source": "data/raw/test.pdf",
+    "page": 13,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p13_c81",
+    "text": ".7 13.6 ± 1.2 2.5 ± 3.8 13.6 ± 2.9 5.5 ± 6.2 MC dropout 13.8 ± 1.3 4.0 ± 5.7 14.5 ± 2.7 4.5 ± 4.1 15.5 ± 1.2 6.0 ± 4.9 Deep ensemble 14.5 ± 1.9 1.0 ± 1.2 14.4 ± 0.7 0.0 ± 0.0 14.3 ± 1.2 10.5 ± 10.5 Fig. 15. Confusion matrix of each method for task T0 in Case 2. Table 7 Description of three OOD detection tasks in Case 2. Tasks Seen fault classes Unseen fault classes Number of training samples Number of validation samples Number of test samples T0 0, 1, 2, 3, 4 5a 5 × 200 5 × 50 6 × 50 T1 0, 1, 2, 3, 4 6a 5 × 200 5 × 50 6 × 50 T2 0, 1, 2, 3, 4 7a 5 × 200 5 × 50 6 × 50 a In practice, the true labels of samples from all unseen fault classes are “OOD”. Y. Xiao et al.",
+    "source": "data/raw/test.pdf",
+    "page": 13,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c82",
+    "text": "accuracy. In addition, considering that the performance of the devel­ oped MCSL relies on the predefined prior distribution, we will use a more comprehensive prior distribution to further improve the diversity of attention weights. Finally, since the setting of uncertainty thresholds is critical for determining whether a sample is ID or OOD, a more complete threshold setting scheme will be provided. CRediT authorship contribution statement Yiming Xiao: Writing – original draft, Software, Methodology, Data curation. Haidong Shao: Writing – review & editing, Validation, Su­ pervision, Funding acquisition, Conceptualization. Haomiao Zhang: Investigation, Data curation. Rongming Wei: Visualization, Investiga­ tion. Bin Liu: Writing – review & editing, Validation. Declaration of competing",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c83",
+    "text": "lization, Investiga­ tion. Bin Liu: Writing – review & editing, Validation. Declaration of competing interest The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper. Acknowledgements This research is supported by the National Natural Science Founda­ tion of China (No. 52275104), the Science and Technology Innovation Program of Hunan Province (No. 2023RC3097), and the Hunan Pro­ vincial Innovation Foundation for Postgraduate (No. CX20240031). Data availability Data will be made available on request. References Bejnordi, B., Blankevoort, T., Welling, M., 2019. Batch-shaping for learning conditional channel gated networks. arXiv preprint arXiv:1907.06627. Blundell, C., Corneb",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c84",
+    "text": "learning conditional channel gated networks. arXiv preprint arXiv:1907.06627. Blundell, C., Cornebise, J., Kavukcuoglu, K., et al., 2015. Weight Uncertainty in Neural Network arXiv preprint arXiv:1505.05424. Deng, Y., Kim, Y., Chiu, J., et al., 2018. Latent alignment and variational attention, 2018 Neural Information Processing Systems (NeurIPS). Fan, X., Zhang, S., Chen, B., et al., 2020. Bayesian attention modules, 2020 Neural Information Processing Systems (NeurIPS). Fu, J., Liu, J., Tian, H., et al., 2019. Dual attention network for scene segmentation, 2019 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), pp. 3141–3149. Gal, Y., Ghahramani, Z., 2015. Dropout as a Bayesian approximation: representing model uncertainty in deep learning. arXiv preprint arXiv:150",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c85",
+    "text": "a Bayesian approximation: representing model uncertainty in deep learning. arXiv preprint arXiv:1506.02142. Goodfellow, I., Shlens, J., Szegedy, C., 2015. Explaining and harnessing adversarial examples. 2015 International Conference on Learning Representations (ICLR). Guo, J., Yang, Y., Li, H., et al., 2024. A parallel deep neural network for intelligent fault diagnosis of drilling pumps. Eng. Appl. Artif. Intell. 133, 108071. Han, T., Li, Y., 2022. Out-of-distribution detection-assisted trustworthy machinery fault diagnosis approach with uncertainty-aware deep ensembles. Reliab. Eng. Syst. Saf. 226, 108648. Han, T., Liu, C., Wu, L., et al., 2019. An adaptive spatiotemporal feature learning approach for fault diagnosis in complex systems. Mech. Syst. Signal Process. 117, 170–187. Ho",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c86",
+    "text": "ning approach for fault diagnosis in complex systems. Mech. Syst. Signal Process. 117, 170–187. Hou, Q., Zhou, D., Feng, J., et al., 2021. Coordinate attention for efficient mobile network design, 2021 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), pp. 13708–13717. Hu, J., Shen, L., Sun, G., 2018. Squeeze-and-excitation networks. 2018 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), pp. 7132–7141. Lakshminarayanan, B., Pritzel, A., Blundell, C., 2017. Simple and scalable predictive uncertainty estimation using deep ensembles. 2017 Neural Information Processing Systems (NeurIPS). Li, Y., Zhou, Z., Sun, C., et al., 2024. Variational attention-based interpretable transformer network for rotary machine fault diagnosis. IEEE Transact. Neural Networ",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c87",
+    "text": "interpretable transformer network for rotary machine fault diagnosis. IEEE Transact. Neural Networks Learn. Syst. 35 (5), 6180–6193. Li, X., Chen, Y., Liu, Y., 2025. A novel convolutional neural network with global perception for bearing fault diagnosis. Eng. Appl. Artif. Intell. 143, 109986. Mu, M., Jiang, H., Wang, X., et al., 2025. Adaptive model-agnostic meta-learning network for cross-machine fault diagnosis with limited samples. Eng. Appl. Artif. Intell. 141, 109748. Shao, H., Jiang, H., Zhang, H., et al., 2018. Electric locomotive bearing fault diagnosis using a novel convolutional deep belief network. IEEE Trans. Ind. Electron. 65 (3), 2727–2736. Woo, S., Park, J., Lee, J., et al., 2018. CBAM: Convolutional Block Attention Module arXiv preprint arXiv:1807.06521. Wu, Y., Li",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c88",
+    "text": "al., 2018. CBAM: Convolutional Block Attention Module arXiv preprint arXiv:1807.06521. Wu, Y., Li, R., Yu, Y., et al., 2022. Reparameterized attention for convolutional neural networks. Pattern Recognit. Lett. 164, 89–95. Xiao, Y., Shao, H., Feng, M., et al., 2023. Towards trustworthy rotating machinery fault diagnosis via attention uncertainty in transformer. J. Manuf. Syst. 70, 186–201. Xiao, Y., Shao, H., Wang, J., et al., 2024. Bayesian variational transformer: a generalizable model for rotating machinery fault diagnosis. Mech. Syst. Signal Process. 207, 110936. Xiao, Y., Shao, H., Yan, S., et al., 2025a. Domain generalization for rotating machinery fault diagnosis: a survey. Adv. Eng. Inform. 64, 103063. Xiao, Y., Shao, H., Wang, J., et al., 2025b. Domain-augmented meta ensemb",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c89",
+    "text": ". Eng. Inform. 64, 103063. Xiao, Y., Shao, H., Wang, J., et al., 2025b. Domain-augmented meta ensemble learning for mechanical fault diagnosis from heterogeneous source domains to unseen target domains. Expert Syst. Appl. 259, 125345. Xie, W., Han, T., Pei, Z., et al., 2023. A unified out-of-distribution detection framework for trustworthy prognostics and health management in renewable energy systems. Eng. Appl. Artif. Intell. 125, 106707. Xue, B., Hu, S., Xu, J., et al., 2022. Bayesian neural network language modeling for speech recognition. IEEE/ACM Trans. Audio, Speech, Language Process. 30, 2900–2917. Yang, J., Zhou, K., Li, Y., et al., 2021. Generalized Out-Of-Distribution Detection: A Survey arXiv preprint arXiv:2110.11334. Zhang, Z., Dalca, A., Sabuncu, M., 2019. Confidence",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c90",
+    "text": "on: A Survey arXiv preprint arXiv:2110.11334. Zhang, Z., Dalca, A., Sabuncu, M., 2019. Confidence calibration for convolutional neural networks using structured dropout. arXiv preprint arXiv:1906.09551. Zhang, S., Fan, X., Chen, B., et al., 2021. Bayesian Attention Belief Networks arXiv preprint arXiv:2106.05251. Zhang, X., Wang, C., Zhou, W., et al., 2024. Trustworthy diagnostics with out-of- distribution detection: a novel max-consistency and min-similarity guided deep ensembles for uncertainty estimation. IEEE Internet Things J. 11 (13), 23055–23067. Zhang, K., Zhang, Q., Liu, Q., et al., 2025. MCAGU-Net: a model for composite fault diagnosis of multi-sensor node networks. Eng. Appl. Artif. Intell. 141, 109814. Zhao, Z., Li, T., Wu, J., et al., 2020. Deep learning algorithms for",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "test_p15_c91",
+    "text": "pl. Artif. Intell. 141, 109814. Zhao, Z., Li, T., Wu, J., et al., 2020. Deep learning algorithms for rotating machinery intelligent diagnosis: an open source benchmark study. ISA Trans. 107, 224–255. Zhou, T., Han, T., Droguettcd, E., 2022. Towards trustworthy machine fault diagnosis: a probabilistic Bayesian deep learning framework. Reliab. Eng. Syst. Saf. 224, 108525. Zhou, H., Chen, W., Cheng, L., et al., 2023. Trustworthy fault diagnosis with uncertainty estimation through evidential convolutional neural networks. IEEE Trans. Ind. Inf. 19 (11), 10842–10852. Y. Xiao et al.",
+    "source": "data/raw/test.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  }
+]

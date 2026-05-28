@@ -4,6 +4,7 @@ from src.loaders.pdf_loader import load_pdf
 from src.chunkers.fixed_chunker import chunk_documents
 from src.embeddings.embedding_model import EmbeddingModel
 from src.index.vector_store import VectorStore
+from src.index.bm25_index import BM25Index
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build a vector index from a PDF.")
@@ -25,7 +26,12 @@ def main() -> None:
     store = VectorStore(model)
     store.build(chunks)
     store.save(args.index_dir)
-    print(f"Saved index to: {args.index_dir}")
+
+    bm25_index = BM25Index()
+    bm25_index.build(chunks)
+    bm25_index.save(args.index_dir)
+
+    print(f"Saved dense and BM25 indexes to: {args.index_dir}")
 
 if __name__ == "__main__":
     main()

@@ -196,3 +196,133 @@ BM25 + Dense Hybrid Retrieval
 - 提升对关键词敏感问题的检索效果。
 - 对比 Dense-only、BM25-only 和 Hybrid Retrieval 的检索结果。
 - 为后续 Rerank 和 Citation 质量检查做准备。
+
+## V0.2 初步实验：Dense / BM25 / Hybrid 对比
+
+### 实验设置
+
+- Query: `What method does this paper propose?`
+- LLM backend: vLLM
+- LLM model: Qwen2.5-3B-Instruct
+- Served model name: `X`
+- Dense embedding model: `sentence-transformers/all-MiniLM-L6-v2`
+- BM25 tokenizer: simple English/number regex tokenizer
+- Hybrid alpha: 0.3
+- `top_k`: 3
+- `temperature`: 0.1
+- `max_tokens`: 192
+
+### Dense-only 结果
+
+运行命令：
+
+```powershell
+python -m scripts.run_rag --index_dir data/index/test_index --query "What method does this paper propose?" --top_k 2 --retriever dense --llm mock
+```
+
+检索结果摘要：
+
+```text
+[1] data/raw/test.pdf, page 12, chunk_id=test_p12_c75
+[2] data/raw/test.pdf, page 1, chunk_id=test_p1_c7
+```
+
+观察：
+
+- Dense 检索召回了 page 12 的方法评估相关片段。
+- 第二条结果是 page 1 的出版信息和版权信息，属于噪声。
+- Dense-only 对该 query 的证据定位不够精确。
+
+### BM25-only 结果
+
+运行命令：
+
+```powershell
+python -m scripts.run_rag --index_dir data/index/test_index --query "What method does this paper propose?" --top_k 2 --retriever bm25 --llm mock
+```
+
+检索结果摘要：
+
+```text
+[1] data/raw/test.pdf, page 12, chunk_id=test_p12_c73
+[2] data/raw/test.pdf, page 2, chunk_id=test_p2_c10
+```
+
+观察：
+
+- BM25 召回了 page 2 的方法定义片段，其中包含 `we propose an alternative approach...`。
+- BM25 对 `method`、`propose` 等关键词更敏感。
+- 相比 Dense-only，BM25 更容易找到和方法描述直接相关的证据。
+
+### Hybrid Retrieval 结果
+
+运行命令：
+
+```powershell
+python -m scripts.run_rag --index_dir data/index/test_index --query "What method does this paper propose?" --top_k 3 --retriever hybrid --alpha 0.3 --llm mock
+```
+
+检索结果摘要：
+
+```text
+[1] score=0.7000 dense=0.0000 bm25=1.0000, page 12, chunk_id=test_p12_c73
+[2] score=0.4691 dense=0.0000 bm25=0.6702, page 2, chunk_id=test_p2_c10
+[3] score=0.3000 dense=1.0000 bm25=0.0000, page 12, chunk_id=test_p12_c75
+```
+
+观察：
+
+- `alpha=0.3` 时，Hybrid 更偏向 BM25，因此 page 2 的方法定义 chunk 被召回到前 3。
+- Hybrid 去掉了 Dense-only 中 page 1 的出版信息噪声。
+- 当前融合方式仍然会把 BM25 第一名 page 12 排在 page 2 前面，排序仍不够理想。
+
+### Hybrid + vLLM 生成结果
+
+运行命令：
+
+```powershell
+python -m scripts.run_rag --index_dir data/index/test_index --query "What method does this paper propose?" --top_k 3 --retriever hybrid --alpha 0.3 --llm vllm --base_url http://localhost:7890/v1 --api_key abc123 --model_name X --temperature 0.1 --max_tokens 192
+```
+
+模型回答：
+
+```text
+This paper proposes an alternative approach to constructing variational attention called "uncertainty-aware deep variational attention network" (DVAN). The DVAN uses the posterior distribution of the network parameters of the attention module to generate random attention weights, eliminating the need for custom-designed structures and making variational attention more easily applicable across different architectures.
+```
+
+引用来源：
+
+```text
+[1] data/raw/test.pdf, page 12, chunk_id=test_p12_c73
+[2] data/raw/test.pdf, page 2, chunk_id=test_p2_c10
+[3] data/raw/test.pdf, page 12, chunk_id=test_p12_c75
+```
+
+观察：
+
+- Hybrid 召回了 page 2 的方法定义片段后，模型回答明显更具体。
+- 回答中提到了 `variational attention`、`posterior distribution of the network parameters`、`random attention weights` 和 `architecture-agnostic` 等关键信息。
+- 相比 Dense-only，Hybrid 提供了更有用的上下文。
+- 但引用排序仍不够理想：最关键的方法定义来源是 [2]，而不是 [1]。
+
+### V0.2 当前结论
+
+BM25 + Dense Hybrid Retrieval 已经初步改善检索质量：
+
+```text
+Dense-only: 召回语义相关片段，但容易混入出版信息噪声
+BM25-only: 更容易召回包含 propose/method 等关键词的片段
+Hybrid: 能结合两者，减少部分噪声，并召回更直接的方法定义证据
+```
+
+当前主要问题：
+
+- Hybrid 融合分数仍然较粗糙；
+- page 12 的方法评估片段仍排在 page 2 的方法定义片段之前；
+- 需要后续 Rerank 对候选结果进行更精细排序。
+
+下一步建议：
+
+```text
+V0.3: Hybrid top-N → Rerank → top-k → LLM answer
+```
