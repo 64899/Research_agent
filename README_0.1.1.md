@@ -228,3 +228,40 @@ Engineering
 ↓
 OCR / SFT / RL Extension
 ```
+
+## 项目总体路线图
+
+本快照对应 **V0.1.1 vLLM 本地模型接入版本**。此时最小 RAG 链路已经从 mock answer 升级为本地 vLLM 真实生成。
+
+当前状态：
+
+```text
+V0.0 项目初始化 ✅
+V0.1 最小 PDF RAG ✅
+V0.1.1 vLLM 本地模型接入 ✅ 当前快照
+V0.2 BM25 + Dense Hybrid Retrieval ⏳ 下一步
+V0.3 Rerank + Citation ⏳ 计划中
+V0.4 Evaluation 评测体系 ⏳ 计划中
+V0.5 Agent 工具调用 ⏳ 计划中
+V0.6 工程化与配置化 ⏳ 计划中
+V0.7 展示与项目包装 ⏳ 计划中
+V0.8 扩展增强 ⏳ 计划中
+```
+
+已完成能力：
+
+- 最小 PDF RAG 主链路；
+- `MockLLMClient` 和 `VLLMClient`；
+- 本地 vLLM OpenAI-compatible API 调用；
+- Qwen2.5-3B-Instruct 生成回答；
+- V0.1 实验记录。
+
+后续版本目标：
+
+- V0.2：加入 BM25，并实现 BM25 + Dense Hybrid Retrieval，解决 Dense-only 检索噪声问题。
+- V0.3：加入 Rerank，让最能回答 query 的证据 chunk 排到前面。
+- V0.4：构建检索评测体系，计算 Recall@k、Hit Rate、MRR。
+- V0.5：实现 Agent 工具调用。
+- V0.6-V0.8：配置化、展示包装和 OCR/VLM/SFT/RL 等增强方向。
+
+当前建议：先提升 retrieval quality，再继续做 Agent。

@@ -326,3 +326,151 @@ Hybrid: 能结合两者，减少部分噪声，并召回更直接的方法定义
 ```text
 V0.3: Hybrid top-N → Rerank → top-k → LLM answer
 ```
+
+## V0.3 初步实验：Hybrid + Rerank
+
+### 实验设置
+
+- Query: `What method does this paper propose?`
+- Retriever: Hybrid Retrieval
+- Hybrid alpha: 0.3
+- Candidate count before rerank: 10
+- Final `top_k`: 3
+- Reranker model: `cross-encoder/ms-marco-MiniLM-L-6-v2`
+- LLM backend: vLLM
+- LLM model: Qwen2.5-3B-Instruct
+- `temperature`: 0.1
+- `max_tokens`: 192
+
+### Rerank 检索结果
+
+运行命令：
+
+```powershell
+python -m scripts.run_rag --index_dir data/index/test_index --query "What method does this paper propose?" --retriever hybrid --alpha 0.3 --candidate_k 10 --top_k 3 --rerank --llm mock
+```
+
+Rerank 后的检索结果摘要：
+
+```text
+[1] page 1, chunk_id=test_p1_c2, rerank_score=6.0820
+[2] page 12, chunk_id=test_p12_c73, rerank_score=1.4177
+[3] page 12, chunk_id=test_p12_c75, rerank_score=0.3065
+```
+
+第一名 chunk 内容包含：
+
+```text
+this paper proposes:
+(1) an architecture-agnostic variational attention;
+(2) a Monte Carlo shaping layer;
+(3) a model uncertainty estimation scheme.
+```
+
+观察：
+
+- Rerank 将最能直接回答问题的 page 1 方法定义 chunk 排到第一。
+- 未 rerank 时，Hybrid 排名前两位主要是 page 12 的实验表现片段和 page 2 的方法相关片段。
+- Rerank 后，候选排序更符合 query 的真实意图。
+
+### Hybrid + Rerank + vLLM 生成结果
+
+运行命令：
+
+```powershell
+python -m scripts.run_rag --index_dir data/index/test_index --query "What method does this paper propose?" --retriever hybrid --alpha 0.3 --candidate_k 10 --top_k 3 --rerank --llm vllm --base_url http://localhost:7890/v1 --api_key abc123 --model_name X --temperature 0.1 --max_tokens 192
+```
+
+模型回答：
+
+```text
+This paper proposes an uncertainty-aware deep variational attention network for Out-of-Distribution (OOD) detection-assisted trustworthy mechanical fault diagnosis. Specifically, it includes three main components:
+
+1. An architecture-agnostic variational attention applicable to various popular deterministic attention.
+2. A Monte Carlo shaping layer ensuring attention weights' diversity for reliable uncertainty quantification.
+3. A model uncertainty estimation scheme detecting distribution shifts.
+
+These components work together to form the proposed method, which aims to improve the OOD detection performance of models while maintaining their ability to make accurate predictions for in-distribution samples.
+```
+
+引用来源：
+
+```text
+[1] data/raw/test.pdf, page 1, chunk_id=test_p1_c2
+[2] data/raw/test.pdf, page 12, chunk_id=test_p12_c73
+[3] data/raw/test.pdf, page 12, chunk_id=test_p12_c75
+```
+
+观察：
+
+- 模型回答直接总结出了论文提出方法的三个组成部分。
+- 回答主要依据 [1]，即方法定义 chunk，而不是仅依赖 page 12 的实验表现片段。
+- 相比 Dense-only 和 Hybrid-only，Hybrid + Rerank 的证据排序和最终回答质量明显更好。
+
+### Citation Check 规则级检查
+
+运行命令：
+
+```powershell
+python -m scripts.run_rag --index_dir data/index/test_index --query "What method does this paper propose?" --retriever hybrid --alpha 0.3 --candidate_k 10 --top_k 3 --rerank --llm vllm --base_url http://localhost:7890/v1 --api_key abc123 --model_name X --temperature 0.1 --max_tokens 192 --check_citations
+```
+
+模型回答：
+
+```text
+This paper proposes an uncertainty-aware deep variational attention network for OOD detection-assisted trustworthy mechanical fault diagnosis.
+```
+
+引用来源：
+
+```text
+[1] data/raw/test.pdf, page 1, chunk_id=test_p1_c2
+[2] data/raw/test.pdf, page 12, chunk_id=test_p12_c73
+[3] data/raw/test.pdf, page 12, chunk_id=test_p12_c75
+```
+
+Citation Check 输出：
+
+```text
+has_citations: False
+used_citations: []
+invalid_citations: []
+source_count: 3
+is_valid: False
+warnings:
+- answer does not contain citation markers like [1]
+```
+
+观察：
+
+- `citation_eval.py` 可以正确检测回答中是否包含 `[1]`、`[2]` 这类 citation marker。
+- 当前 Qwen2.5-3B-Instruct 能生成内容质量较好的回答，但没有稳定遵守“每句话带 citation marker”的格式要求。
+- Prompt 已经确认输入模型，因此问题不在 RAG 调用链，而在模型对引用格式的遵循不稳定。
+- 不采用自动补 `[1]` 的 fallback，因为这会制造“模型实际没有生成引用但系统伪造引用”的假可信感。
+- 后续更合理的方向是结构化输出 JSON、citation 失败重试，或使用更强/更适配论文阅读任务的模型。
+
+### V0.3 当前结论
+
+Rerank 初步解决了 Hybrid Retrieval 中“召回到了相关 chunk，但排序不够理想”的问题。Citation Check 已经可以发现模型回答中是否缺少有效引用标记。
+
+当前最佳链路为：
+
+```text
+Hybrid Retrieval top-10 → CrossEncoder Rerank → top-3 → vLLM answer → Citation Check
+```
+
+当前主要收益：
+
+- 将方法定义 chunk 排到第一；
+- 提升 LLM 输入 context 的证据质量；
+- 让最终回答更完整、更贴近原文；
+- 能检测模型是否输出有效 citation marker；
+- 为后续结构化回答、引用重试和检索评测打基础。
+
+后续改进方向：
+
+- 尝试更适合中英文论文检索的 reranker；
+- 比较不同 `candidate_k` 和 `top_k` 对回答质量的影响；
+- 尝试 JSON 结构化输出，将 `answer` 和 `citations` 分字段生成；
+- 增加 citation 失败后的重试机制；
+- 构建小规模 eval set，计算 Recall@k、Hit Rate 和 MRR。

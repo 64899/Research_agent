@@ -189,3 +189,39 @@ Engineering
 ↓
 OCR / SFT / RL Extension
 ```
+
+## 项目总体路线图
+
+本快照对应 **V0.2 BM25 + Dense Hybrid Retrieval**。此时系统已经支持 Dense-only、BM25-only 和 Hybrid 三种检索方式，并完成了初步对比实验。
+
+当前状态：
+
+```text
+V0.0 项目初始化 ✅
+V0.1 最小 PDF RAG ✅
+V0.1.1 vLLM 本地模型接入 ✅
+V0.2 BM25 + Dense Hybrid Retrieval ✅ 当前快照
+V0.3 Rerank + Citation ⏳ 下一步
+V0.4 Evaluation 评测体系 ⏳ 计划中
+V0.5 Agent 工具调用 ⏳ 计划中
+V0.6 工程化与配置化 ⏳ 计划中
+V0.7 展示与项目包装 ⏳ 计划中
+V0.8 扩展增强 ⏳ 计划中
+```
+
+已完成能力：
+
+- BM25 索引构建、保存、加载和检索；
+- Dense / BM25 / Hybrid 三种 retriever 模式；
+- `--retriever dense|bm25|hybrid`；
+- `--alpha` 控制 Dense 与 BM25 的融合权重；
+- Dense-only、BM25-only、Hybrid 初步对比实验。
+
+后续版本目标：
+
+- V0.3：加入 Rerank，解决 Hybrid 已召回相关 chunk 但排序不够理想的问题，并开始做 Citation 可信度检查。
+- V0.4：构建检索评测体系，计算 Recall@k、Hit Rate、MRR。
+- V0.5：实现 Agent 工具调用。
+- V0.6-V0.8：配置化、展示包装和 OCR/VLM/SFT/RL 等增强方向。
+
+当前建议：进入 Rerank，让候选 chunks 的排序更贴近 query 的真实意图。

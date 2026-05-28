@@ -90,3 +90,34 @@ def load_pdf(pdf_path: str) -> list[dict]:
 - `source`: PDF 文件路径；
 - `page`: 从 1 开始的页码；
 - `metadata`: 至少包含 `type="pdf"`。
+
+## 项目总体路线图
+
+本快照对应 **V0.0 项目初始化**。此时项目只完成目录结构和基础文件，还没有实现任何 RAG 功能。
+
+当前状态：
+
+```text
+V0.0 项目初始化 ✅
+V0.1 最小 PDF RAG ⏳ 下一步
+V0.2 BM25 + Dense Hybrid Retrieval ⏳ 计划中
+V0.3 Rerank + Citation ⏳ 计划中
+V0.4 Evaluation 评测体系 ⏳ 计划中
+V0.5 Agent 工具调用 ⏳ 计划中
+V0.6 工程化与配置化 ⏳ 计划中
+V0.7 展示与项目包装 ⏳ 计划中
+V0.8 扩展增强 ⏳ 计划中
+```
+
+后续版本目标：
+
+- V0.1：跑通 `PDF → chunks → embeddings → vector search → LLM answer`。
+- V0.2：加入 BM25，并实现 BM25 + Dense Hybrid Retrieval。
+- V0.3：加入 Rerank，并开始做 Citation 可信度检查。
+- V0.4：构建检索评测体系，计算 Recall@k、Hit Rate、MRR。
+- V0.5：实现 Agent 工具调用，包括 retriever、summarizer、citation_checker 等工具。
+- V0.6：加入 YAML 配置、logging、参数管理和更稳定的工程结构。
+- V0.7：增加 Gradio/Streamlit 展示、架构图、实验表格和面试讲解文档。
+- V0.8：探索 OCR、VLM 图表理解、多论文对比、RAGAS、工具调用 SFT、GRPO 等增强方向。
+
+当前建议：不要一次性生成完整项目，下一步只实现 `pdf_loader.py`。
