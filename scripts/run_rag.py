@@ -2,7 +2,7 @@
 import argparse
 from src.embeddings.embedding_model import EmbeddingModel
 from src.index.vector_store import VectorStore
-from src.llm.vllm_client import MockLLMClient
+from src.llm.vllm_client import MockLLMClient, VLLMClient
 
 def build_context(results: list[dict]) -> str:
     context_parts = []
@@ -51,6 +51,12 @@ def main() -> None:
     parser.add_argument("--index_dir", required=True, help="Directory of the built index.")
     parser.add_argument("--query", required=True, help="User question.")
     parser.add_argument("--top_k", type=int, default=5, help="Number of chunks to retrieve.")
+    parser.add_argument("--llm", choices=["mock", "vllm"], default="mock", help="LLM backend to use.")
+    parser.add_argument("--base_url", default="http://localhost:7890/v1", help="OpenAI-compatible API base URL.")
+    parser.add_argument("--api_key", default="abc123", help="API key for the LLM service.")
+    parser.add_argument("--model_name", default="X", help="Model name served by vLLM.")
+    parser.add_argument("--temperature", type=float, default=0.2, help="LLM sampling temperature.")
+    parser.add_argument("--max_tokens", type=int, default=128, help="Maximum tokens for LLM output.")
 
     args = parser.parse_args()
 
@@ -73,8 +79,12 @@ def main() -> None:
     #print("Prompt:")
     #print(prompt[:3000])
 
-    llm = MockLLMClient()
-    answer = llm.generate(prompt)
+    if args.llm == "mock":
+        llm = MockLLMClient()
+    else:
+        llm = VLLMClient(base_url=args.base_url,api_key=args.api_key,model_name=args.model_name,)
+        
+    answer = llm.generate(prompt, temperature=args.temperature,max_tokens=args.max_tokens,)
 
     print("Question:")
     print(args.query)
