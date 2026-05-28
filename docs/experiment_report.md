@@ -446,17 +446,19 @@ warnings:
 - `citation_eval.py` 可以正确检测回答中是否包含 `[1]`、`[2]` 这类 citation marker。
 - 当前 Qwen2.5-3B-Instruct 能生成内容质量较好的回答，但没有稳定遵守“每句话带 citation marker”的格式要求。
 - Prompt 已经确认输入模型，因此问题不在 RAG 调用链，而在模型对引用格式的遵循不稳定。
+- 当前阶段不强制回答正文必须带 `[1]`、`[2]`，但必须在回答后展示 `Sources`，让用户能够回到原文检查证据。
+- Citation Check 在 V0.3 中更适合作为质量提示：它能指出“正文没有引用标记”，但这不等于该回答完全不可用。
 - 不采用自动补 `[1]` 的 fallback，因为这会制造“模型实际没有生成引用但系统伪造引用”的假可信感。
-- 后续更合理的方向是结构化输出 JSON、citation 失败重试，或使用更强/更适配论文阅读任务的模型。
+- 下一阶段优先评估检索质量。
 
 ### V0.3 当前结论
 
-Rerank 初步解决了 Hybrid Retrieval 中“召回到了相关 chunk，但排序不够理想”的问题。Citation Check 已经可以发现模型回答中是否缺少有效引用标记。
+Rerank 初步解决了 Hybrid Retrieval 中“召回到了相关 chunk，但排序不够理想”的问题。Citation Check 已经可以发现模型回答中是否缺少有效引用标记，但当前阶段不把正文 citation marker 作为强制要求。
 
 当前最佳链路为：
 
 ```text
-Hybrid Retrieval top-10 → CrossEncoder Rerank → top-3 → vLLM answer → Citation Check
+Hybrid Retrieval top-10 → CrossEncoder Rerank → top-3 → vLLM answer + Sources → Citation Check
 ```
 
 当前主要收益：
@@ -464,13 +466,127 @@ Hybrid Retrieval top-10 → CrossEncoder Rerank → top-3 → vLLM answer → Ci
 - 将方法定义 chunk 排到第一；
 - 提升 LLM 输入 context 的证据质量；
 - 让最终回答更完整、更贴近原文；
-- 能检测模型是否输出有效 citation marker；
-- 为后续结构化回答、引用重试和检索评测打基础。
+- 能检测模型是否输出有效 citation marker，并将其作为质量提示；
+- 明确当前最低引用要求：回答后必须展示 `Sources`；
+- 为后续检索评测打基础。
 
 后续改进方向：
 
 - 尝试更适合中英文论文检索的 reranker；
 - 比较不同 `candidate_k` 和 `top_k` 对回答质量的影响；
-- 尝试 JSON 结构化输出，将 `answer` 和 `citations` 分字段生成；
-- 增加 citation 失败后的重试机制；
-- 构建小规模 eval set，计算 Recall@k、Hit Rate 和 MRR。
+- 构建小规模 eval set，计算 Recall@k、Hit Rate 和 MRR；
+- 对比 Dense-only、BM25-only、Hybrid、Hybrid + Rerank 的检索质量；
+- 后续进入 Agent 工具调用和工程化完善。
+
+## V0.4 初步实验：Retrieval Evaluation
+
+### 实验目标
+
+V0.4 的目标是从“凭观察判断检索效果”转向“用小规模评测集量化比较检索器”。本阶段不改变 RAG 生成链路，也不要求模型回答正文必须带 citation marker，而是优先评估检索结果是否命中预期证据页。
+
+### 新增文件
+
+```text
+data/eval/questions.jsonl
+data/eval/results_bm25.json
+data/eval/results_bm25_rerank.json
+data/eval/results_hybrid_rerank.json
+src/evaluation/retrieval_eval.py
+scripts/evaluate_retrieval.py
+```
+
+### 评测集
+
+当前使用 3 条页级粗标注问题：
+
+```jsonl
+{"query": "What method does this paper propose?", "expected_pages": [1, 2]}
+{"query": "What problem does this paper solve?", "expected_pages": [1, 2]}
+{"query": "What experiments are used in this paper?", "expected_pages": [8, 9, 10, 11, 12, 13]}
+```
+
+说明：
+
+- `expected_pages` 是人工标注的证据页范围，不是严格答案级标注。
+- 当前评测是页级检索评测，用来比较不同 retriever 的趋势。
+- 后续可以继续细化到 chunk 级标注或答案级评测。
+
+### 指标定义
+
+本阶段实现了三个基础指标：
+
+```text
+Hit@k: top-k 中只要命中任意 expected page，就记为 1。
+Recall@k: expected pages 中有多少比例被 top-k 覆盖。
+MRR: 第一个命中结果的 reciprocal rank。
+```
+
+### 运行命令
+
+BM25：
+
+```powershell
+python -m scripts.evaluate_retrieval --index_dir data/index/test_index --eval_file data/eval/questions.jsonl --retriever bm25 --top_k 3 --output_file data/eval/results_bm25.json
+```
+
+BM25 + Rerank：
+
+```powershell
+python -m scripts.evaluate_retrieval --index_dir data/index/test_index --eval_file data/eval/questions.jsonl --retriever bm25 --top_k 3 --rerank --candidate_k 10 --output_file data/eval/results_bm25_rerank.json
+```
+
+Hybrid + Rerank：
+
+```powershell
+python -m scripts.evaluate_retrieval --index_dir data/index/test_index --eval_file data/eval/questions.jsonl --retriever hybrid --alpha 0.3 --top_k 3 --rerank --candidate_k 10 --output_file data/eval/results_hybrid_rerank.json
+```
+
+如果需要人工检查检索结果，可以加：
+
+```powershell
+--show_results
+```
+
+### Overall 结果
+
+```text
+BM25:
+Mean Hit    = 1.0000
+Mean Recall = 0.6111
+Mean MRR    = 0.8333
+
+BM25 + Rerank:
+Mean Hit    = 1.0000
+Mean Recall = 0.5556
+Mean MRR    = 1.0000
+
+Hybrid + Rerank:
+Mean Hit    = 1.0000
+Mean Recall = 0.3889
+Mean MRR    = 1.0000
+```
+
+### 观察
+
+- BM25 在当前 3 条英文问题上覆盖率最高，`Mean Recall` 达到 0.6111。
+- BM25 + Rerank 的 `Mean MRR` 达到 1.0000，说明每个问题的第一个有效证据都排到了第一位。
+- Hybrid + Rerank 的 `Mean MRR` 同样达到 1.0000，但 `Mean Recall` 低于 BM25，说明排序靠前但覆盖面较窄。
+- Rerank 更擅长改善排序位置，不一定提升 Recall；在 top-k 较小的情况下，它还可能把部分相关页挤出 top-k。
+- 当前问题主要是英文关键词型问题，因此 BM25 表现强是合理现象。
+
+### V0.4 当前结论
+
+当前最稳 baseline 是 BM25。若目标是覆盖更多证据页，优先使用 BM25；若目标是让第一个输入给 LLM 的证据更可能有效，BM25 + Rerank 更合适。
+
+V0.4 已经建立了一个最小检索评测闭环：
+
+```text
+eval questions → retriever search → Hit / Recall / MRR → JSON result files → experiment report
+```
+
+后续改进方向：
+
+- 扩充 `questions.jsonl`，增加更多论文阅读问题；
+- 校准 `expected_pages`，减少粗标注带来的误差；
+- 对比不同 `top_k`、`candidate_k` 和 `alpha`；
+- 后续进入 Agent 工具调用和工程化完善。

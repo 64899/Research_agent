@@ -1,0 +1,137 @@
+{
+  "config": {
+    "index_dir": "data/index/test_index",
+    "eval_file": "data/eval/questions.jsonl",
+    "retriever": "bm25",
+    "top_k": 3,
+    "alpha": 0.5,
+    "rerank": false,
+    "candidate_k": null,
+    "reranker_model": null
+  },
+  "overall": {
+    "mean_hit": 1.0,
+    "mean_recall": 0.611111111111111,
+    "mean_mrr": 0.8333333333333334
+  },
+  "questions": [
+    {
+      "query": "What method does this paper propose?",
+      "expected_pages": [
+        1,
+        2
+      ],
+      "retrieved_pages": [
+        12,
+        2,
+        1
+      ],
+      "hit": 1,
+      "recall": 1.0,
+      "mrr": 0.5,
+      "results": [
+        {
+          "chunk_id": "test_p12_c73",
+          "source": "data/raw/test.pdf",
+          "page": 12,
+          "text_preview": "the highest and second highest accuracy, with D- VSA remaining significantly less accurate than D-VCBAM and D-VSE. This again suggests that using appropriate deterministic attention as the basic structure of variational attention is more helpful in enhancing the OOD detection performance of the mode",
+          "score": 6.353113166117495
+        },
+        {
+          "chunk_id": "test_p2_c10",
+          "source": "data/raw/test.pdf",
+          "page": 2,
+          "text_preview": "here is an urgent need for a highly universal, architecture-agnostic attention randomization strategy to make variational attention easier to deploy in various architectures. To address the above problems, we propose an alternative approach to construct variational attention, i.e., modeling the post",
+          "score": 4.804274222758074
+        },
+        {
+          "chunk_id": "test_p1_c2",
+          "source": "data/raw/test.pdf",
+          "page": 1,
+          "text_preview": "on self-attention, with limited exploration in other types of attention. To address these limitations, this paper proposes: (1) an architecture-agnostic variational attention applicable to various popular deterministic attention; (2) a Monte Carlo shaping layer ensuring attention weights’ diversity ",
+          "score": 2.295620973536907
+        }
+      ]
+    },
+    {
+      "query": "What problem does this paper solve?",
+      "expected_pages": [
+        1,
+        2
+      ],
+      "retrieved_pages": [
+        2,
+        12,
+        5
+      ],
+      "hit": 1,
+      "recall": 0.5,
+      "mrr": 1.0,
+      "results": [
+        {
+          "chunk_id": "test_p2_c16",
+          "source": "data/raw/test.pdf",
+          "page": 2,
+          "text_preview": "ers, which make p(ω|D ) difficult to solve by the commonly used Bayes’ rule. Therefore, BNN chooses to approximate this posterior using the variational inference method. Variational inference aims to find a distribution as close as possible to the true posterior distribution from a family of distrib",
+          "score": 9.002468309110714
+        },
+        {
+          "chunk_id": "test_p12_c73",
+          "source": "data/raw/test.pdf",
+          "page": 12,
+          "text_preview": "the highest and second highest accuracy, with D- VSA remaining significantly less accurate than D-VCBAM and D-VSE. This again suggests that using appropriate deterministic attention as the basic structure of variational attention is more helpful in enhancing the OOD detection performance of the mode",
+          "score": 5.733124128650781
+        },
+        {
+          "chunk_id": "test_p5_c35",
+          "source": "data/raw/test.pdf",
+          "page": 5,
+          "text_preview": "is usually insufficient to allow the attention modules to generate diverse weights simply by randomizing their parameter. Yet, the performance of variational attention is highly correlated with the diversity of attention weights (Blundell et al., 2015). Therefore, MCSL is developed to alleviate this",
+          "score": 3.9995930901991787
+        }
+      ]
+    },
+    {
+      "query": "What experiments are used in this paper?",
+      "expected_pages": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "retrieved_pages": [
+        10,
+        8,
+        2
+      ],
+      "hit": 1,
+      "recall": 0.3333333333333333,
+      "mrr": 1.0,
+      "results": [
+        {
+          "chunk_id": "test_p10_c70",
+          "source": "data/raw/test.pdf",
+          "page": 10,
+          "text_preview": "tly higher FAR. Therefore, it can be argued that embedding MCSL in variational attention is effective. 4.2. Case 2: OOD detection tasks for bearing fault diagnosis 1) Data preparation: The dataset used in Case 2 is an electric loco­ motive bearing fault dataset (Shao et al., 2018). Figs. 12 and 13 s",
+          "score": 8.376455034764621
+        },
+        {
+          "chunk_id": "test_p8_c49",
+          "source": "data/raw/test.pdf",
+          "page": 8,
+          "text_preview": "pes of DVAN in the OOD detection tasks of mechanical fault diagnosis, using bearing and gearbox fault diagnosis as two cases. The DVAN encoder used in the experiments comprises three DVAN blocks, and the classifier has only one fully-connected layer. To demonstrate the supe­ riority of variational a",
+          "score": 5.49510180899702
+        },
+        {
+          "chunk_id": "test_p2_c12",
+          "source": "data/raw/test.pdf",
+          "page": 2,
+          "text_preview": "ttention modules, such as channel attention (Mu et al., 2025), (Hu et al., 2018), spatial attention (Hou et al., 2021), (Li et al., 2025), mixed attention (Woo et al., 2018), (Fu et al., 2019), etc. During the inference phase, DVAN can construct multiple attention modules by randomly drawing multipl",
+          "score": 5.417869039992919
+        }
+      ]
+    }
+  ]
+}

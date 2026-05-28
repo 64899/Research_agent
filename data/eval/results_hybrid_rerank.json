@@ -1,0 +1,164 @@
+{
+  "config": {
+    "index_dir": "data/index/test_index",
+    "eval_file": "data/eval/questions.jsonl",
+    "retriever": "hybrid",
+    "top_k": 3,
+    "alpha": 0.3,
+    "rerank": true,
+    "candidate_k": 10,
+    "reranker_model": "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  },
+  "overall": {
+    "mean_hit": 1.0,
+    "mean_recall": 0.3888888888888889,
+    "mean_mrr": 1.0
+  },
+  "questions": [
+    {
+      "query": "What method does this paper propose?",
+      "expected_pages": [
+        1,
+        2
+      ],
+      "retrieved_pages": [
+        1,
+        12,
+        12
+      ],
+      "hit": 1,
+      "recall": 0.5,
+      "mrr": 1.0,
+      "results": [
+        {
+          "chunk_id": "test_p1_c2",
+          "source": "data/raw/test.pdf",
+          "page": 1,
+          "text_preview": "on self-attention, with limited exploration in other types of attention. To address these limitations, this paper proposes: (1) an architecture-agnostic variational attention applicable to various popular deterministic attention; (2) a Monte Carlo shaping layer ensuring attention weights’ diversity ",
+          "score": 0.17697647343131173,
+          "dense_score": 0.0,
+          "bm25_score": 0.2528235334733025,
+          "rerank_score": 6.0820441246032715
+        },
+        {
+          "chunk_id": "test_p12_c73",
+          "source": "data/raw/test.pdf",
+          "page": 12,
+          "text_preview": "the highest and second highest accuracy, with D- VSA remaining significantly less accurate than D-VCBAM and D-VSE. This again suggests that using appropriate deterministic attention as the basic structure of variational attention is more helpful in enhancing the OOD detection performance of the mode",
+          "score": 0.7,
+          "dense_score": 0.0,
+          "bm25_score": 1.0,
+          "rerank_score": 1.417695164680481
+        },
+        {
+          "chunk_id": "test_p12_c75",
+          "source": "data/raw/test.pdf",
+          "page": 12,
+          "text_preview": "obustness of the proposed method. Moreover, considering that the presence of a small number of misclassified ID samples is reasonable due to the limitations of IQR proximity rule, it can be assumed that the uncertainty estimates of the proposed method in Case 2 are nearly well- calibrated for both I",
+          "score": 0.3122885606856084,
+          "dense_score": 1.0,
+          "bm25_score": 0.017555086693726286,
+          "rerank_score": 0.3065403699874878
+        }
+      ]
+    },
+    {
+      "query": "What problem does this paper solve?",
+      "expected_pages": [
+        1,
+        2
+      ],
+      "retrieved_pages": [
+        2,
+        6,
+        15
+      ],
+      "hit": 1,
+      "recall": 0.5,
+      "mrr": 1.0,
+      "results": [
+        {
+          "chunk_id": "test_p2_c16",
+          "source": "data/raw/test.pdf",
+          "page": 2,
+          "text_preview": "ers, which make p(ω|D ) difficult to solve by the commonly used Bayes’ rule. Therefore, BNN chooses to approximate this posterior using the variational inference method. Variational inference aims to find a distribution as close as possible to the true posterior distribution from a family of distrib",
+          "score": 0.8059781240945012,
+          "dense_score": 0.3532604136483373,
+          "bm25_score": 1.0,
+          "rerank_score": -5.1002349853515625
+        },
+        {
+          "chunk_id": "test_p6_c41",
+          "source": "data/raw/test.pdf",
+          "page": 6,
+          "text_preview": "L), L denotes the number of attention modules, and −log p(D |ϖ, ω) is equivalent to the cross entropy loss. There are many ways to set αm, and this paper adopts the scheme as in (Blundell et al., 2015): αm = 2M−m 2M−1. This is because the first few minibatches have little impact on the model paramet",
+          "score": 0.27382136379228844,
+          "dense_score": 0.5883363984148124,
+          "bm25_score": 0.13902920609692107,
+          "rerank_score": -5.978021144866943
+        },
+        {
+          "chunk_id": "test_p15_c83",
+          "source": "data/raw/test.pdf",
+          "page": 15,
+          "text_preview": "lization, Investiga­ tion. Bin Liu: Writing – review & editing, Validation. Declaration of competing interest The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper. Acknowledgements Th",
+          "score": 0.19169428785224762,
+          "dense_score": 0.27569347574152153,
+          "bm25_score": 0.15569463589970167,
+          "rerank_score": -6.623263359069824
+        }
+      ]
+    },
+    {
+      "query": "What experiments are used in this paper?",
+      "expected_pages": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "retrieved_pages": [
+        10,
+        2,
+        5
+      ],
+      "hit": 1,
+      "recall": 0.16666666666666666,
+      "mrr": 1.0,
+      "results": [
+        {
+          "chunk_id": "test_p10_c70",
+          "source": "data/raw/test.pdf",
+          "page": 10,
+          "text_preview": "tly higher FAR. Therefore, it can be argued that embedding MCSL in variational attention is effective. 4.2. Case 2: OOD detection tasks for bearing fault diagnosis 1) Data preparation: The dataset used in Case 2 is an electric loco­ motive bearing fault dataset (Shao et al., 2018). Figs. 12 and 13 s",
+          "score": 0.7,
+          "dense_score": 0.0,
+          "bm25_score": 1.0,
+          "rerank_score": 0.5077239274978638
+        },
+        {
+          "chunk_id": "test_p2_c12",
+          "source": "data/raw/test.pdf",
+          "page": 2,
+          "text_preview": "ttention modules, such as channel attention (Mu et al., 2025), (Hu et al., 2018), spatial attention (Hou et al., 2021), (Li et al., 2025), mixed attention (Woo et al., 2018), (Fu et al., 2019), etc. During the inference phase, DVAN can construct multiple attention modules by randomly drawing multipl",
+          "score": 0.5168532418799465,
+          "dense_score": 0.5439516581720183,
+          "bm25_score": 0.5052396348976301,
+          "rerank_score": -0.8328601717948914
+        },
+        {
+          "chunk_id": "test_p5_c34",
+          "source": "data/raw/test.pdf",
+          "page": 5,
+          "text_preview": "e attention modules obtained through MC sampling. The details of the MCSL are described in Section 3.3. In this paper, the posterior and prior distributions of the attention module parameters are also chosen as diagonal Gaussian distributions. Therefore, a sample of the module parameters can also be",
+          "score": 0.42370250445200575,
+          "dense_score": 0.5864606473964341,
+          "bm25_score": 0.35394901461867934,
+          "rerank_score": -2.8720154762268066
+        }
+      ]
+    }
+  ]
+}
