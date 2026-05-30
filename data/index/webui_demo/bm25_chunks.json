@@ -1,0 +1,956 @@
+[
+  {
+    "chunk_id": "111_p1_c0",
+    "text": "Journal Pre-proof A Bayesian Uncertainty-Guided Transfer Learning Method for Trustworthy Fault Diagnosis of Rotating Components Zilin Zhang, Jun Luo, Ke Feng PII: S0951-8320(26)00433-3 DOI: https://doi.org/10.1016/j.ress.2026.112621 Reference: RESS 112621 To appear in: Reliability Engineering and System Safety Please cite this article as: Zilin Zhang, Jun Luo, Ke Feng, A Bayesian Uncertainty-Guided Transfer Learning Method for Trustworthy Fault Diagnosis of Rotating Components, Reliability Engineering and System Safety (2026), doi: https://doi.org/10.1016/j.ress.2026.112621 This is a PDF of an article that has undergone enhancements after acceptance, such as the ad- dition of a cover page and metadata, and formatting for readability. This version will undergo addi- tional copyediting, type",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p1_c1",
+    "text": "d metadata, and formatting for readability. This version will undergo addi- tional copyediting, typesetting and review before it is published in its ﬁnal form. As such, this ver- sion is no longer the Accepted Manuscript, but it is not yet the deﬁnitive Version of Record; we are providing this early version to give early visibility of the article. Please note that Elsevier’s sharing policy for the Published Journal Article applies to this version, see: https://www.elsevier.com/about/ policies-and-standards/sharing#4-published-journal-article. Please also note that, during the produc- tion process, errors may be discovered which could affect the content, and all legal disclaimers that apply to the journal pertain. © 2026 Published by Elsevier Ltd.",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 1,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p2_c2",
+    "text": "A Bayesian Uncertainty-Guided Transfer Learning Method for Trustworthy Fault Diagnosis of Rotating Components Zilin Zhanga, Jun Luob, Ke Fenga,c,∗ aState Key Laboratory for Manufacturing System Engineering, School of Mechanical Engineering, Xi’an Jiaotong University, Xi’an, 710049, Shaanxi, China bState Key Laboratory of Mechanical Transmission for Advanced Equipment, Chongqing University, Chongqing, 400044, Chongqing, China cSchool of Computer and Information Engineering, Henan Normal University, Xinxiang, 453007, Henan, China Abstract The overall reliability and safety of mission-critical equipment, such as aero- engines, largely depend on the health of their rotating parts. Therefore, trust- worthy fault diagnosis is essential for achieving reliability-centered health management. Existi",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p2_c3",
+    "text": "st- worthy fault diagnosis is essential for achieving reliability-centered health management. Existing methods face several challenges under cross-working conditions, including computational redundancy, a high risk of negative trans- fer, and a lack of awareness of uncertainty. To address these issues, this paper proposes a novel trustworthy fault diagnosis method based on trans- fer learning. More specifically, first, a domain-shared feature encoder that fuses sparse self-attention and a deep CNN is designed to extract local and global features. Second, a Bayesian classifier based on variational inference is constructed and combined with Monte Carlo sampling to quantify epistemic uncertainty. Then, a domain alignment mechanism combining explicit and implicit discrepancy measures is introd",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p2_c4",
+    "text": "y. Then, a domain alignment mechanism combining explicit and implicit discrepancy measures is introduced. Meanwhile, the uncertainty is mapped via an exponential decay function into adaptive weights that guide domain alignment, thereby prioritizing the transfer of high-confidence sam- ples and suppressing unreliable ones. Finally, the experimental results on the gear dataset show that the proposed method achieved the highest ac- curacy rate of 99.11% in three transfer tasks. Moreover, among the correct ∗Corresponding author Email address: ke.feng@outlook.com.au (Ke Feng) Preprint submitted to Reliability Engineering & System Safety March 23, 2026",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 2,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p3_c5",
+    "text": "predictions, 91.84% fall within the low-uncertainty region, while all misclas- sifications are flagged as high-uncertainty. These results demonstrate that the proposed method can provide trustworthy, uncertainty-aware diagnostics to enhance the reliability and safety of complex mechanical systems. Keywords: Rotating parts; fault diagnosis; transfer learning; uncertainty quantification; Bayesian neural network 1. Introduction As industrial equipment becomes increasingly complex and integrated, ensuring the reliability and safety of these systems has become a decisive factor governing overall performance. In these systems, rotating parts such as gears, bearings, and shafts are critical for power and motion transmission. However, given that these parts often operate under harsh conditions, th",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p3_c6",
+    "text": "er and motion transmission. However, given that these parts often operate under harsh conditions, their health status serves as the primary bottleneck affecting the safety and re- liability of the entire system [1]. They are widely used in wind power, rail transportation, aerospace, and heavy machinery, where any reliability-related failure could lead to catastrophic consequences [2, 3]. Therefore, timely, ac- curate, and reliable fault diagnosis of rotating components is essential to ensure the safe, reliable, and efficient operation of industrial systems. Fault diagnosis methods are generally divided into two categories: model- based methods and data-driven methods [4]. Model-based methods rely on system dynamics and fault-mechanism modeling. They perform fault detec- tion and identifica",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p3_c7",
+    "text": "rely on system dynamics and fault-mechanism modeling. They perform fault detec- tion and identification by building state-space models, designing observers, or generating residuals. However, these methods require a thorough under- standing of the system’s physical characteristics. Their applicability is also often limited to specific types of machinery. In addition, modeling accu- racy can be influenced by changes in operating conditions, nonlinear effects, and environmental noise [5]. Data-driven methods learn the mapping from “signals/features” to fault categories using historical monitoring data. They often show better adaptability and stronger potential for transfer across sys- tems. This family includes conventional machine-learning methods and mod- ern deep learning methods. Convent",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p3_c8",
+    "text": "is family includes conventional machine-learning methods and mod- ern deep learning methods. Conventional methods typically extract features using time–frequency analysis, envelope spectrum analysis, wavelet decompo- sition, or empirical mode decomposition. They then perform diagnosis using threshold rules or shallow classifiers. Deep learning methods have developed rapidly in recent years. They can learn discriminative representations with 2",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 3,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p4_c9",
+    "text": "less manual effort. As a result, deep learning has become an important re- search direction in mechanical fault diagnosis [6, 7]. Deep learning models such as convolutional neural networks (CNNs) have been widely applied in fault diagnosis due to their strong capability for fea- ture representation [8]. For example, Jiang et al. [9] designed a lightweight CNN for rolling bearing diagnosis. Compared to traditional CNNs, the num- ber of network parameters is reduced while the ability to capture key local vibration features remains unaffected. Wang et al. [10] combined hyperpa- rameter optimization with a 1D-CNN to improve the adaptability of convo- lutional kernel configurations during feature learning, allowing the model to extract critical feature structures more effectively. Ding et al. [",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 4,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p4_c10",
+    "text": "learning, allowing the model to extract critical feature structures more effectively. Ding et al. [11] developed a convolutional feature extraction network based on resonance demodulation. Based on the above reserarch work, it can be found that CNNs perform well in local feature extraction. However, their inherent kernel structure focuses on short-term or local receptive fields. This makes it difficult to model global dependencies in long time-series data. As a result, important information may be lost, which can limit diagnostic performance [12]. To address the limited capability of CNNs in modeling global dependen- cies, the emergence of Transformers and their self-attention mechanism has offered a new avenue for long-range time-series feature learning. In recent years, Transformer arch",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 4,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p4_c11",
+    "text": "offered a new avenue for long-range time-series feature learning. In recent years, Transformer architectures have been increasingly introduced into fault diagnosis, as self-attention excels at capturing long-range dependencies and global relationships [13]. To further integrate local details with global infor- mation, hybrid architectures that combine CNNs and Transformers have be- come a major research trend [14, 15]. For example, Wang et al. [16] combined a CNN with a bidirectional temporal convolutional network and multi-head attention to learn spatial–temporal features, improving diagnostic accuracy. Zhou et al. [17] proposed a rolling-bearing diagnosis method using GAF and a CNN–ViT hybrid model, which improves global dependency modeling and achieves high accuracy with strong noise r",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 4,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p4_c12",
+    "text": "brid model, which improves global dependency modeling and achieves high accuracy with strong noise robustness on bearing datasets. Lu et al. [18] introduced the C-Trans hybrid model, which uses multi-scale convolutions to extract local time–frequency features and a temporal Trans- former to model global dependencies, improving cross-condition fault feature extraction performance. In summary, the strengths of self-attention in Trans- formers and CNNs are complementary, enabling higher recognition accuracy and stronger robustness in long time-series representation and fault diagnosis under complex operating conditions. However, these performance gains often come with additional computational and memory overhead. Self-attention 3",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 4,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p5_c13",
+    "text": "requires pairwise interactions among all time steps, and its computational complexity increases quadratically with sequence length. Moreover, vibra- tion signals from rotating machinery are typically periodic and locally repeti- tive, so not all time steps require equally strong global dependency modeling. Overly dense fully connected temporal interactions may introduce redundant correlations. Therefore, although CNN–Transformer architectures provide a new direction for fault diagnosis, it remains a key challenge for engineering deployment to reduce computational cost and mitigate the adverse effects of redundant temporal connections while preserving global modeling capability [19, 20]. In practical industrial applications, changes in operating conditions often prevent a model trained on a",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p5_c14",
+    "text": "ractical industrial applications, changes in operating conditions often prevent a model trained on a source domain from generalizing accurately to a target domain. Transfer learning has therefore become a key technique for achieving cross-condition and cross-machine fault diagnosis, as it improves target-domain performance by leveraging knowledge from the source domain [21, 22]. Existing transfer learning approaches can be classified into four categories: instance-based, feature-based, model-based, and relation-based methods. Current research mainly focuses on feature-based transfer learn- ing, which includes domain-adversarial approaches and domain-alignment approaches [23]. Domain-adversarial methods reduce domain discrepancies through adversarial optimization. However, their training pr",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p5_c15",
+    "text": "ial methods reduce domain discrepancies through adversarial optimization. However, their training process is prone to gradient instability and mode collapse, which significantly limits their ro- bustness [24]. In contrast, domain-alignment methods match cross-domain features using statistical distribution measures. They offer stable training and simple implementation, and thus have attracted considerable attention in mechanical fault diagnosis [25]. For example, Qian et al. [26] proposed a new maximum mean square discrepancy (MMSD) metric for transfer diagno- sis of mechanical faults, which addresses the limitation of traditional MMD that aligns only first-order statistics. Li et al. [27] developed a deep transfer network based on multi-domain information fusion and multi-kernel MMD for cr",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p5_c16",
+    "text": "veloped a deep transfer network based on multi-domain information fusion and multi-kernel MMD for cross-machine diagnosis of rolling bearings, improving cross-domain di- agnostic accuracy. Li et al. [28] introduced a digital-twin-assisted transfer learning network with stacked discrete wavelet transforms, which improve intra-class compactness, inter-class separability, and cross-machine transfer performance. Liu et al. [29] proposed a fault diagnosis framework with supervised joint distribution adaptation and feature refinement, improving feature-space consistency and diagnostic performance across operating condi- tions. However, the domain alignment procedures used in these methods rely 4",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 5,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p6_c17",
+    "text": "on global alignment strategies, meaning that all samples are matched with the same degree of distribution alignment. This ignores high-risk samples, which are more likely to cause negative transfer during the adaptation pro- cess, leading to incorrect feature alignment and performance degradation. Such global alignment can easily result in over-alignment and ultimately cause negative transfer [30, 31]. In the era of Industry 4.0, intelligent maintenance systems require not only millisecond-level response and robust generalization across operating conditions, but also highly trustworthy and reliable diagnostic decisions. In real industrial environments, factors such as sensor noise, operating-condition drift, limited samples, and unknown fault types are common. Relying only on highly accura",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 6,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p6_c18",
+    "text": "-condition drift, limited samples, and unknown fault types are common. Relying only on highly accurate predictions may introduce misjudgment risks and even lead to incorrect maintenance decisions. As a result, uncertainty quantification, an important supporting mechanism for enhancing the trustworthiness of di- agnostic systems, has received increasing attention in recent years [32, 33]. For example, Xiao et al. [34] developed a probabilistic Transformer with variational Bayesian inference, modeling attention weights as distributions to capture uncertainty in rotating-machinery signals and support reliable di- agnosis under high-risk conditions. Das et al. [35] used Monte Carlo dropout to build an uncertainty-aware diagnostic network. Repeated stochastic sam- pling yields prediction distri",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 6,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p6_c19",
+    "text": "ild an uncertainty-aware diagnostic network. Repeated stochastic sam- pling yields prediction distributions, helping detect high-uncertainty sam- ples and improving robustness under noise. Ren et al. [36] proposed an interval-based diagnostic framework that combines quantile prediction with deep feature learning. It outputs interval estimates to quantify uncertainty in an interpretable way and support more reliable decisions. Although the above studies have achieved effective uncertainty estimation, most of them treat uncertainty merely as additional output information, without using it to guide model training or optimization. While uncertainty quantification can indeed enhance the reliability of diagnostic results, its potential in transfer learning, particularly in cross-condition or cro",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 6,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p6_c20",
+    "text": "ty of diagnostic results, its potential in transfer learning, particularly in cross-condition or cross-machine scenarios, remains largely underexplored [37]. Considering the role of uncertainty in identify- ing reliable samples and avoiding risky predictions, incorporating it into the transfer learning process to enable selective knowledge transfer, suppress neg- ative transfer, and optimize domain alignment is a promising direction [38]. This forms the primary research focus of the present study. To solve the above problems, this paper proposes a transfer learning method based on global and local feature extraction networks and Bayesian uncertainty guidance, specifically designed for the trustworthy fault diagnosis 5",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 6,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p7_c21",
+    "text": "of key components under different working conditions. The main contribu- tions of this paper are as follows: 1. A domain feature sharing encoder network architecture is proposed, which combines preceding sparse self-attention and deep CNN, incorporates prior knowledge via depthwise convolution, and employs sparse attention to reduce computational complexity, thereby enabling an efficient joint repre- sentation of local and global information. 2. A Bayesian fully connected layer is designed using variational inference and combined with Monte Carlo sampling to quantify uncertainty. An expo- nential decay mapping is then employed to convert uncertainty into adaptive weights for guiding domain alignment, enabling the preferential transfer of high-confidence samples and suppression of high-risk",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 7,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p7_c22",
+    "text": "lignment, enabling the preferential transfer of high-confidence samples and suppression of high-risk ones. The proposed method was validated on a multi-condition gear dataset. Then, a consistency analysis between predictive uncertainty and model ac- curacy was conducted, confirming the method’s reliability for practical fault diagnosis. The remainder of this paper is organized as follows. Section 2 provides a detailed description of the proposed method, including the overall frame- work design and the implementation details of each core module. Section 3 presents experimental validation of the proposed approach using a gear dataset. Section 4 concludes the paper. 2. Proposed Method The overall framework of the method proposed in this paper is shown in Fig.1. It consists of four components:",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 7,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p7_c23",
+    "text": "ll framework of the method proposed in this paper is shown in Fig.1. It consists of four components: a domain-shared feature encoder, a Bayesian classifier, an uncertainty-guided domain feature alignment mod- ule, and a multi-objective joint optimization module. The domain-shared feature encoder is primarily used to extract domain-invariant fault feature information from the source and target domains. The Bayesian classifier outputs the predicted probabilities of fault categories and, combined with Monte Carlo sampling, performs uncertainty estimation for the prediction re- sults. The uncertainty-guided domain feature alignment module is designed to mitigate distribution shifts in cross-domain scenarios. It reduces the dis- crepancy between the source and the target domain by combining exp",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 7,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p7_c24",
+    "text": "in scenarios. It reduces the dis- crepancy between the source and the target domain by combining explicit statistical measures and implicit metrics, while employing an uncertainty- based weighting and filtering mechanism to guide the model toward reliable transfer-learning-based fault diagnosis. 6",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 7,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p8_c25",
+    "text": "Fig. 1. The overall framework of the proposed method 2.1. Domain-Shared Feature Encoder The domain-shared feature encoder consists of four layers, as shown in Fig.2, including an input embedding layer, a preceding sparse self-attention layer, a deep CNN backbone, and a Bayesian classifier. Fig. 2. The framework of the domain-shared feature encoder 2.1.1. Input Embedding Layer Given that the batch size is B, the input sequence length is L0, then the model input is defined as X(0) ∈RB×1×L0. The input embedding layer 7",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 8,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p9_c26",
+    "text": "is a convolutional layer with a 1 × 1 kernel; let its weights be denoted by Wemb ∈RDemb×1×1, whose role is to linearly map the original one-dimensional vibration signal into a Demb -dimensional feature space without changing the temporal resolution, thereby obtaining a high-dimensional embedding repre- sentation at each time step. After X(0) passes through the input embedding layer, Y (0) ∈RB×Demb×L0 is obtain. Y (0) = Wemb · X(0) + bemb (1) where bemb denotes the bias term. 2.1.2. Preceding Sparse Self-Attention Module The preceding sparse self-attention module consists of a downsampling layer and a sparse self-attention layer. The downsampling layer is an effi- cient sequence compression module comprising a depthwise convolution [39] and a pointwise convolution [40]. The main purpose of",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p9_c27",
+    "text": "odule comprising a depthwise convolution [39] and a pointwise convolution [40]. The main purpose of this layer is to re- duce the computational cost of the standard self-attention mechanism. For one-dimensional time-series fault signals, time points with physical depen- dencies are typically sparse and localized. Consequently, directly applying a full-sequence self-attention mechanism leads to information redundancy and wastes computational resources. In this paper, a downsampling layer is intro- duced as an efficient and learnable sequence compressor, which compresses the original sequence of length L0 into a shorter sequence of length Ls that serves as its summary. The depthwise convolution is performed indepen- dently on each of the Demb channels, which can be shown as follows: Y (1) =",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p9_c28",
+    "text": "n is performed indepen- dently on each of the Demb channels, which can be shown as follows: Y (1) = Wdw · Y (0) + bdw (2) where Wdw ∈RDemb×1×Kdw represents the weight matrix, Kdw denotes the convolution kernel, and Y (1) ∈RB×Demb×Ls. Ls is computed as follows: Ls = \u0014L0 + 2 · Pdw −Kdw Sdw \u0015 + 1 (3) where Kdw, Sdw, Pdw denote the convolution kernel size, stride, and padding, respectively. Sdw refers to the downsampling factor in the model parameters. Therefore, the complexity of the self-attention mechanism in the next layer is reduced from O (L02) to O (Ls2), compressing highly correlated neighbor- ing samples into a single local feature response, so that global dependency 8",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 9,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p10_c29",
+    "text": "modeling is built upon locally filtered and de-redundant sequence represen- tations. Subsequently, Y (1) is fed into pointwise convolution to obtain Y (2) ∈ RB×Demb×Ls. Y (2) = Wpc · Y (1) + bpc (4) where Wpc ∈RDemb×Demb×1 represents the weight matrix, bpc denotes the bias parameter, and Y (2) is then transformed by transposition into Y (3) ∈ RB×Ls×Demb so that it can be fed into the next module. The downsampling module introduces a locality inductive bias, i.e., it injects the prior knowledge that \"adjacent time points are correlated\" into the transformer architecture [41]. Then Y (3) is fed into the sparse self-attention layer. First, the Q (Query), K (Key), and V (Value) are computed separately, as given by the following equations. Q = Y (3)WQ, K = Y (3)WK, V = Y (3)WV (5) where WQ, WK,",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 10,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p10_c30",
+    "text": "rately, as given by the following equations. Q = Y (3)WQ, K = Y (3)WK, V = Y (3)WV (5) where WQ, WK, WV represent the weight matrix. Then, a reshape opera- tion is applied to project the channel dimension into H independent sub- spaces (heads), yielding Q ∈RB×H×Ls×DH, K ∈RB×H×Ls×DH and V ∈ RB×H×Ls×DH. The similarity scores between Q and K are then computed using the dot-product operation and scaled by √DH to avoid excessively large values as the dimensionality increases. Scores = Q · KT √DH (6) where DH denotes the feature dimension of each attention head. Next, the attention Scores are subjected to Top-K sparsification [42]. As- suming that each time step does not need to attend to all temporal data, but only to the K most relevant points. This not only reduces the computational cost but",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 10,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p10_c31",
+    "text": "oral data, but only to the K most relevant points. This not only reduces the computational cost but also serves as a form of regularization that mitigates overfitting and partially filters out the influence of noise. A mask is then constructed for matrix Scores, in which all non-Top-K entries are replaced with −∞. Scoressparse = TopKMask(Scores, K) (7) Then Scoressparse is transformed into a valid probability distribution through softmax, thereby obtaining the attention weight matrix A. 9",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 10,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p11_c32",
+    "text": "A = softmax (Scoressparse) (8) The TopKMask operates exclusively during the forward pass to gener- ate a hard sparse mask. By retaining only the Top-K attention scores and masking the remaining entries with −∞, the mechanism ensures a sparse dis- tribution after the softmax re-normalization. During backpropagation, the indexing operation is treated as non-differentiable; thus, gradients are se- lectively propagated through the retained Top-K entries. Since the softmax outputs for non-selected positions are zero, their corresponding gradients vanish naturally. Consequently, this module functions as a hard sparse at- tention mechanism, where parameter updates are restricted to the preserved connections, effectively balancing computational efficiency with training sta- bility. The attention w",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 11,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p11_c33",
+    "text": "nnections, effectively balancing computational efficiency with training sta- bility. The attention weights A are used to compute a weighted sum of V . Fi- nally, the outputs of the H heads are concatenated along the DH dimension to obtain Y (4) ∈RB×Ls×Demb. Y (4) = Wout · Concat(A · V ) (9) Finally, linear interpolation and transposition are applied to restore the original sequence length and dimensionality of the data, and a residual con- nection is added to obtain Y (5) ∈RB×Demb×L0. 2.1.3. Deep CNN Backbone (DCNN) The deep CNN Backbone receives feature maps with global context, whereas the main structure of this layer, the CNN, has the core advantage of extracting local and hierarchical features. After this layer, the abstract feature Y (6) is obtained. The DCNN consists of N convolution",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 11,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p11_c34",
+    "text": "atures. After this layer, the abstract feature Y (6) is obtained. The DCNN consists of N convolutional blocks f(•) and the specific computation is given as follows: Y (6) = fN \u0000fN−1 \u0000. . . f2 \u0000f1 \u0000Y (5)\u0001\u0001 . . . \u0001\u0001 (10) The DCNN extracts deeper and more abstract complex features by stack- ing convolutional and pooling layers. Each convolutional block f(•) com- prises the following operations. fl(Z) = Pooll (σ (BNl (Convl(Z)))) (11) 10",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 11,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p12_c35",
+    "text": "where Z = H(l−1) denotes the output of the previous layer, Convl(•) denotes the convolution operation, BNl(•) denotes batch normalization, σ(•) denotes the ReLU activation function, and Pooll(•) denotes the pooling operation. The model framework adopts a Transformer-CNN hybrid architecture. The preceding self-attention layer provides the capability to capture global information, whereas the DCNN provides the capability to capture local de- tails, thereby ultimately extracting discriminative fault feature information. At the same time, the output Y (6) of this module is also used as the input to the subsequent domain alignment module. 2.2. Bayesian Classifier The Bayesian classifier [43] consists of two Bayesian fully connected lay- ers. Each Bayesian fully connected layer is constructed ba",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 12,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p12_c36",
+    "text": "ists of two Bayesian fully connected lay- ers. Each Bayesian fully connected layer is constructed based on variational inference and the reparameterization trick, as shown in Fig.3. Its core idea is to learn distributions over the weights, rather than deterministic weight values. weight u weight  bias u bias  Standard Normal Noise ~ (0,1) w  Reparameterization Trick Standard Normal Noise ~ (0,1) b  Scale & Shift   Stochastic weights weight weight w w      Stochastic bias bias bias b b      Prior Distribution ~ (0,1) p  Alignment u Prior Posterior Alignment  KL Divergence ( || ) KL q p Trainable Parameters Posterior Distribution 2 ~ ( , ) weight weight q u   Linear Operation y xw b   cls  Output KL  total cls KL      Forward Propagation Backpropagation Fi",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 12,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p12_c37",
+    "text": "eration y xw b   cls  Output KL  total cls KL      Forward Propagation Backpropagation Fig. 3. The framework of the Bayesian fully connected layer The study focuses on epistemic uncertainty, which arises from model pa- rameter uncertainty and limited labeled data. A \"Bayesian Head\" strategy is implemented: the domain-shared feature encoder remains deterministic to minimize computational overhead, while the classifier parameters are mod- eled via posterior distributions. Predictive uncertainty is then quantified 11",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 12,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p13_c38",
+    "text": "based on the posterior predictive distribution, serving as a metric for risk assessment and adaptive regulation during the domain transfer process. First, the prior distributions of parameters WBL and bBL in the Bayesian fully connected layer (BFCL) are defined. It is assumed that all weights and biases follow a standard normal distribution. WBL ∼N \u0000µw, σ2 w \u0001 , bBL ∼N \u0000µb, σ2 b \u0001 (12) where µw and µb denote the means of WBL and bBL, whose value is 0, and σ2 w and σ2 b denote the variances of WBL and bBL, whose value is 1. This is the core of the Bayesian fully connected layer, where the weight is not stored as a single tensor but is instead modeled as a Gaussian distribution. In a Bayesian neural network, the primary objective is to learn the true posterior distribution p(w | D) of the ne",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 13,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p13_c39",
+    "text": "neural network, the primary objective is to learn the true posterior distribution p(w | D) of the network weight parameters w given the training data D. According to Bayes’ theorem, this distribution is computed as follows: p(w | D) = p(D | w)p(w) p(D) (13) where p(D | w) is the likelihood function, which represents the probability of observing the data given the weights. p(w) is the prior distribution, which represents the prior assumption about the weights before observing the data. p(D) is the marginal likelihood, i.e., P(D) = R p(D | w)p(w)dw, which denotes the total probability of observing this dataset under all possible model parameters. Because the dimensionality of neural network parameters is extremely high, the denominator p(D) is mathematically intractable, and the posterior di",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 13,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p13_c40",
+    "text": "rameters is extremely high, the denominator p(D) is mathematically intractable, and the posterior distribution cannot be computed directly. To address the above problem, a variational inference approach is intro- duced. Instead of solving the true posterior, a tractable approximate distri- bution is sought to closely match the true posterior [44], thereby converting the integration problem into an optimization problem. Assume that the vari- ational posterior distribution is a Gaussian distribution qθ(w) parameterized by θ, and the objective then becomes to find the optimal θ ∼N (µ, σ2) such that the discrepancy between qθ(w) and p(w | D) is minimized, where the difference between the two distributions is measured by the Kullback-Leibler (KL) divergence. 12",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 13,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p14_c41",
+    "text": "KL(qθ(w)||p(w|D)) = Z qθ(w) log qθ(w) p(w|D)dw = Eqθ \u0014 log qθ(w) p(w|D) \u0015 (14) Substituting Eq.(13) into Eq.(14) yields equation Eq.(15). KL (qθ(w)∥p(w | D)) = Eqθ [log qθ(w)] −Eqθ [log p(D | w) + log p(w) −log p(D)] (15) where the term log p(D) depends only on the data and is independent of the weights. hence its expectation is a constant and can be taken out, resulting in Eq.(16). KL (qθ(w)∥p(w | D)) = Eqθ [log qθ(w)] −Eqθ[log p(w)] −Eqθ[log p(D | w)] + log p(D) (16) Substituting Eqθ [log qθ(w)]−Eqθ[log p(w)] = Eqθ h log qθ(w) p(w) i = KL (qθ(w)∥p(w)) into Eq.(16) yields the following expression. log p(D) = {Eqθ[log p(D | w)] −KL (qθ(w)∥p(w))} + KL (qθ(w)∥p(w | D)) (17) where {Eqθ[log p(D | w)] −KL (qθ(w)∥p(w))} is the Evidence Lower Bound (ELBO) [45], KL (qθ(w)∥p(w | D)) denotes the var",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 14,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p14_c42",
+    "text": "| w)] −KL (qθ(w)∥p(w))} is the Evidence Lower Bound (ELBO) [45], KL (qθ(w)∥p(w | D)) denotes the variational error, and log p(D) is a fixed constant, so the problem of minimizing the variational error can be transformed into maximizing the ELBO. Therefore, the loss function is defined as follows: Lbayes(θ) = −ELBO = KL (qθ(w)) ∥p(w)) −Eqθ[log p(D | w)] (18) where Eqθ[log p(D | w)] denotes the classification loss, which corresponds to sampling weights w from the distribution q and measuring the discrepancy between the resulting predictive distribution of the model and the ground- truth labels. In this process, the reparameterization trick is used for sam- pling, which converts the weight distribution into a differentiable determin- istic function w = µ + σ · ϵ, where ϵ is independent noise",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 14,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p15_c43",
+    "text": "Gaussian distribution. KL (qθ(w)) ∥p(w)) represents the distance between the approximate posterior distribution q and the prior distribution p, de- noted by LKL(θ). In summary, the operation of the Bayesian fully connected layer is defined as BayesianLinear(•). After flattening the feature to obtain Y (7), which is then fed into the Bayesian fully connected layer, which finally outputs Output ∈RB×NClass. Output = BayesianLinear \u0000σ \u0000BayesianLinear \u0000Y (7)\u0001\u0001\u0001 (19) Although the feature extractor is deterministic, cross-domain distribution shifts can cause target samples to deviate from the source-domain decision boundaries in the feature space. This deviation leads to a more dispersed posterior predictive distribution from the Bayesian classifier, resulting in sig- nificantly increased uncerta",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p15_c44",
+    "text": "predictive distribution from the Bayesian classifier, resulting in sig- nificantly increased uncertainty. In this study, such uncertainty is utilized as a quantitative metric for sample reliability. By assigning lower domain- alignment weights to high-uncertainty samples, the method effectively sup- presses negative transfer caused by the alignment of unreliable features. 2.3. Uncertainty-Guided Domain Feature Alignment Module Conventional unsupervised domain adaptation (UDA) methods rely on feature-space alignment to mitigate domain shift. Among such methods, maximum mean discrepancy (MMD) [46] is one of the most representative distribution metrics. The core idea of MMD is to measure the mean distance between the feature distributions PS (source domain) and PT (target domain) in the repro",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p15_c45",
+    "text": "an distance between the feature distributions PS (source domain) and PT (target domain) in the reproducing kernel Hilbert space (RKHS, H). For a given feature mapping ϕ(•) : X →H (This feature corresponds to Y (6) introduced in Section 2.1.3) and the Gaussian kernel function k (x, x′), the MMD between the two distributions is expressed as follow: MMD2 (PS, PT, H) = ∥ExS∼PS [ϕ (xS)] −ExT ∼PT [ϕ (xT)]∥2 H (20) Since ϕ(•) is usually infinite-dimensional, direct computation is infeasible. Therefore, the kernel trick is introduced, i.e., k(x, y) = ⟨ϕ(x), ϕ(y)⟩H. By expanding Eq.(20) and rewriting it in terms of kernel functions, its empirical estimate over finite samples can be obtained as follows. 14",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 15,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p16_c46",
+    "text": "LMMD = 1 B2 B X i=1 B X j=1 k (xi, xj) + 1 B2 B X i=1 B X j=1 k (yi, yj) −2 B2 B X i=1 B X j=1 k (xi, yj) (21) where B denotes the batch size, and i and j denote the sample indexes, respectively. The Gaussian kernel function (RBF kernel) is essentially a sum of an in- finite series. The Gaussian kernel maps the data into an infinite-dimensional space, where aligning the means is equivalent to aligning statistics of all orders in the original space. Where the kernel function k is the sum of l Gaussian kernels, as shown in the following equation. k (x, x′) = l X l=1 exp −∥x −x′∥2 σ2 l ! (22) where σ2 l is the bandwidth parameter of the l-th kernel. Because the coefficients in the Taylor expansion of the Gaussian kernel decay at a factorial rate, the contribution weights of the second-order",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 16,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p16_c47",
+    "text": "nsion of the Gaussian kernel decay at a factorial rate, the contribution weights of the second-order and higher-order statistics to the overall MMD loss are extremely small and are often dominated by the first-order mean difference. Therefore, this paper introduces the CORAL loss as an explicit regularization term [47] to com- pensate for the convergence lag of a single MMD in aligning higher-order statistics. The core idea of CORAL is to explicitly align the second-order statistics (covariance matrices) of the source and target domain. Its loss function LCORAL is defined as the square distance of the Frobenius norm between the source domain CS and the covariance of the target domain CT. LCORAL = 1 4d2 ∥CS −CT∥2 F = 1 4d2 X i,j \u0000Cij S −Cij T \u00012 (23) In summary, the overall domain adaptatio",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 16,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p16_c48",
+    "text": "RAL = 1 4d2 ∥CS −CT∥2 F = 1 4d2 X i,j \u0000Cij S −Cij T \u00012 (23) In summary, the overall domain adaptation loss proposed in this paper is a weighted combination of the multi-kernel MMD loss and the covariance loss. 15",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 16,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p17_c49",
+    "text": "Ldomain = LMMD + LCORAL (24) By minimizing this objective function, the network can learn domain- invariant features that are consistent in both first-order and second-order statistics. In summary, the traditional transfer learning paradigm learns domain- invariant features by minimizing inter-domain discrepancies through a global alignment strategy. However, this strategy treats all samples indiscrimi- nately, which can easily cause irrelevant or easily aligned source-domain samples to dominate the alignment process. Therefore, this paper adap- tively incorporates model uncertainty into the domain loss function as a weighting signal, so that the model focuses on samples that are reliable and information-rich. First, the uncertainty is quantified. The Bayesian fully connected net- work mai",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 17,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p17_c50",
+    "text": "d information-rich. First, the uncertainty is quantified. The Bayesian fully connected net- work maintains randomness in the weight space and can support explicit modeling of the cognitive uncertainty of the model. It employs the Monte Carlo dropout strategy to perform S stochastic forward passes on the model. For an input sample, S stochastic forward passes are performed to obtain a set Z = {Z1, . . . , Zs} of predictive probability vectors, which is used to quantify the model uncertainty. The scalar uncertainty u of the sample is then defined as the sum of the variances of Z along the class dimension. u = c X c=1 Var (Zc) = c X c=1 1 s s X s=1 \u0000Zs −¯Zc \u00012 ! (25) where c represents the number of categories, and ¯Zc is the average predicted probability of the c-th category in S sampling",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 17,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p17_c51",
+    "text": "mber of categories, and ¯Zc is the average predicted probability of the c-th category in S sampling instances. On this basis, an exponentially decaying guidance weight is constructed, denoted as wguide = exp(−α · u). This function is exponentially decaying, which emphasizes reliable samples, rapidly suppresses unreliable ones, and ensures that the weight always lies in (0, 1]. The parameter α controls the rate of attenuation. The larger its value is, the lower the weight of the model for uncertain samples will be. Only extremely certain samples can obtain high weights. This function assigns higher weights to samples with high certainty while avoiding unreliable alignment in uncertain regions. The migration loss guided by uncertainty is given by Lud. Lud = wguide · Ldomain (26) 16",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 17,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p18_c52",
+    "text": "In this study, multiple candidate values for α were evaluated under the same training budget through comparative experiments. The value that achieved the optimal performance on representative transfer tasks was se- lected as the default parameter, ultimately leading to the determination of α = 1. Consequently, all experimental results and subsequent analyses pre- sented in this paper are conducted based on this specific configuration. 2.4. Multi-objective Joint Optimization Module The overall loss function of the proposed method is designed in two stages. The first stage is the source-domain classification convergence phase, which ensures that the model learns stable and discriminative feature representa- tions on the source domain. The second stage is the domain adaptation phase for the s",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 18,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p18_c53",
+    "text": "re representa- tions on the source domain. The second stage is the domain adaptation phase for the source and target domains, in which cross-domain alignment is achieved in the feature space. Ltotal = ( Lcls + LKL, if epoch < E Lcls + λTL · Lud + LKL, if epoch ≥E (27) where E indicates the switching point between phases (epochs) during train- ing, the classification loss Lcls adopts the cross-entropy loss function. LKL in- dicates the distance between the prior and posterior distributions in the afore- mentioned Bayesian network, Lud indicates the uncertainty-guided transfer loss term, and λTL is the weighting coefficient for the transfer loss term. Lcls = − N X i=1 yi · log (ˆyi) (28) where N denotes the number of classes, yi denotes the ground-truth label, ˆyi denotes the predicted proba",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 18,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p18_c54",
+    "text": "N denotes the number of classes, yi denotes the ground-truth label, ˆyi denotes the predicted probability of the model. 3. Experimental Verification 3.1. Experimental data The fault dataset of the gear transmission system is used in this experi- ment [48]. This dataset is obtained by destructive experimental acquisition of Herringbone Gear and Spur Gear under different working conditions. The sampling frequency of the vibration acceleration signal is 15 kHz, and the rotational speed is maintained at 1000 rpm. Different operating conditions 17",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 18,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p19_c55",
+    "text": "are simulated by changing the load torque ( 10Nm, 15Nm, 20Nm ). The gear test diagram is shown in Fig.4. (a) (b) (c) (d) Fig. 4. Gear testing and Partial faults. (a) Assembly drawing of spur gear pair; (b) Severe spalling; (c) Severe wear; (d) Slight broken teeth. The dataset consists of five data group covering health status and a va- riety of different degrees of failure modes, including healthy, slight Crack (Crack), severe crack (S_Crack), slight spalling (Spalling), severe spalling (S_spalling), slight wear (Wear), severe wear (S_wear), slight tooth break- age (Break), and severe tooth breakage (S_Break). The details of dataset are listed in Table 1. In the sample construction stage, the overlapping sliding window tech- nology is used to slice the continuous time-series signals, with",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 19,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p19_c56",
+    "text": "e overlapping sliding window tech- nology is used to slice the continuous time-series signals, with the window size set to 2048 and the step size set to 256. The overall dataset is propor- tionally divided into a development set (80%) and a test set (20%); Among 18",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 19,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p20_c57",
+    "text": "Table 1 Details of the experimental dataset Data Group Gear Type Load Torque(N·m) Fault Types 1 Herringbone Gear 10 Healthy, Crack, S_crack, Spalling, S_spalling, Wear, S_wear, Break 2 Herringbone Gear 15 Healthy, Crack, S_crack, Spalling, Break 3 Herringbone Gear 20 Healthy, Spalling, S_spalling, Wear, S_wear 4 Spur Gear 10 Healthy, Break, S_break, Crack, S_crack, S_spalling, S_wear 5 Spur Gear 15 Healthy, Break, S_break, Crack, S_crack, S_spalling, S_wear them, the development set is further divided into a training set (accounting for 70% of the development set) and a verification set (accounting for 30% of the development set), and the test set is completely independent for final performance evaluation. To eliminate dimensional differences and accelerate the convergence of the neural ne",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 20,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p20_c58",
+    "text": "nce evaluation. To eliminate dimensional differences and accelerate the convergence of the neural network, the experiment first uses Min-Max Normalization to process the original data. For any input sequence x = {x1, x2, . . . , xn}, the normalized sequence x′ i is obtained after processing. x′ i = xi −min(x) max(x) −min(x), i = 1, 2, . . . , n (29) Where i represents the time index of the data points in the sequence, min(x) and max(x) represent the minimum and maximum values over all data points within each sample, respectively. Three transfer tasks are designed as follows: Task A involves migrating data group 1 (source) to group 2 (target). Task B transfers group 1 to group 3, featuring a wider range of operating conditions and more pronounced distribution shifts. Task C transfers from d",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 20,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p20_c59",
+    "text": "wider range of operating conditions and more pronounced distribution shifts. Task C transfers from data group 4 to group 5. 3.2. Model parameters The model proposed in this paper is a hybrid architecture that combines a sparse multi-head self-attention mechanism, a deep convolutional neural net- work (DCNN), and a Bayesian classifier. Table 2 lists the specific parameter configuration of each layer of the model. 19",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 20,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p21_c60",
+    "text": "Table 2 Detailed parameter configuration of the proposed model Component Parameter (type) Value Training settings Epoch 100 Batch Size 64 Input Embedding Layer Window Size 2048 Kernel 1 Demb 64 Preceding sparse self-attention layer Demb 64 Head 8 Downsample Factor 12 Top-K 15 Deep CNN Backbone (Conv1d + BN + ReLU + MaxPool) Number_Layer 5 Kernel 3 Pooling Kernel 2 Padding 1 Bayesian FC1 Output_dim 100 Bayesian FC2 Output_dim Number_class 3.3. Experimental results and discussion The experiments in this paper are implemented in the Windows 11 system environment using Python 3.9 programming language, and the hardware con- figuration includes 12th generation Intel Core i5-12600KF CPU and NVIDIA GeForce RTX 3060. In terms of software configuration, the PyTorch deep learning framework is used to",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 21,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p21_c61",
+    "text": "GeForce RTX 3060. In terms of software configuration, the PyTorch deep learning framework is used to support model construction and training. 3.3.1. In-domain experimental verification 1. Experimental setup To verify the effectiveness of the proposed method based on the combi- nation of improved self-attention mechanism (OSA) and deep convolutional network (DCNN) (named DCNN_OSA) in fault diagnosis, multiple sets of comparative experiments are designed in this study. The comparison model is shown below. 20",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 21,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p22_c62",
+    "text": "(1) WDCNN [49]: A classical wide convolutional deep neural network as the basis for evaluating benchmark performance when no attention mechanism is added. (2) Resnet1D-18 [50]: Classical one-dimensional residual network, repre- senting universal deep learning feature extraction capabilities. (3) TransformerTS_OSA: A time series model based on the Transformer architecture [51, 52], which is used to compare the performance of the pure attention mechanism architecture. (4) DCNN_SA: Add a standard self-attention mechanism on the basis of DCNN to conduct ablation experiments to verify the advantage of the sparse strategy over conventional self-attention. This experiment is conducted using Data Group 3 data. The training set accuracy, verification set accuracy, test set accuracy (mean ± standard",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 22,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p22_c63",
+    "text": "oup 3 data. The training set accuracy, verification set accuracy, test set accuracy (mean ± standard deviation), and single sample reasoning time are used as the main evaluation indices. The mean and standard deviation are computed by aggregating re- sults from 10 independent inference runs. In addition, Gaussian noise with a standard deviation of 0.005 is added to the original data during this experi- ment. 2. Experimental results Table 3 presents a comparison of the performance and efficiency of the five models. It can be seen that the proposed model achieves 99.02% accuracy on the test set. This result is significantly better than the base models WDCNN (93.42%) and Resnet1D-18 (97.96%), and equals the performance of the more computationally heavy DCNN_SA (99.04%). This shows that the in",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 22,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p22_c64",
+    "text": "nd equals the performance of the more computationally heavy DCNN_SA (99.04%). This shows that the introduction of the improved sparse self-attention mechanism can effectively enhance the model’s ability to extract key fault features. Table 3 Performance comparison of different models Model Training set Validation set Test set [mean±std]% Inference time(ms) WDCNN 99.95 96.03 93.42±0.49 0.18 Resnet1D-18 98.71 95.40 97.96±0.31 0.22 TransformerTS_OSA 99.16 97.45 92.43±0.26 1.30 WDCNN_SA 1.0 98.28 99.04±0.32 0.61 Proposed Model 1.0 98.33 99.02±0.31 0.21 21",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 22,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p23_c65",
+    "text": "To more intuitively evaluate the model performance, we plot the compar- ison between model accuracy and inference efficiency, as well as the accuracy distributions over multiple repeated experiments, as shown in Fig.5. (a) (b) Fig. 5. Evaluation of model stability and efficiency. (a) Trade-off between accuracy and inference efficiency; (b) Accuracy distribution on the test set across 10 independent runs. Among them, the bubble size in Fig.5(a) represents the duration of model training, which includes the uncertainty estimation process based on multi- ple inference passes. As can be seen from Fig.5(b), the distribution pattern of the proposed model (red) shows significant characteristics of \"flat top and convergent tail\". Its accuracy data points are highly concentrated around 99%, and the",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 23,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p23_c66",
+    "text": "flat top and convergent tail\". Its accuracy data points are highly concentrated around 99%, and the distribution interval is narrow (indicating that the variance of prediction results is small). Although the average accuracy of DCNN_SA (blue) is higher, its distribution range is slightly wider than that of the pro- posed model, which shows that the sparsity strategy plays a certain role in eliminating redundant feature interference. 22",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 23,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p24_c67",
+    "text": "The evolution of loss and accuracy during training is shown in Fig.6. (a) (b) Fig. 6. Learning curves over training epochs. (a) Loss; (b) Accuracy. It can be seen that the proposed model (red) quickly climbs to the high accuracy range within the first 10 epochs, and the convergence speed is sig- nificantly faster than the other method. Observing the partial magnification (Epoch 80-100), the proposed model is smoother and more stable, consis- tently maintaining its performance near the optimal value. The uncertainty of the output prediction results is quantified, as shown in Fig.7. The vertical axis represents different test sample instances, and the horizontal axis corresponds to fault types. The label True = X indicates the true label, ✓indicates the correct prediction, and × indicates th",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 24,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p25_c68",
+    "text": "prediction. The color intensity encodes uncertainty: light yellow indicates low uncertainty (high confidence), while dark red indicates high uncertainty (low confidence) and a higher risk of misclassification. (a) (b) (c) (d) Fig. 7. Fault diagnosis predictions and uncertainty visualization for representative test samples. (a) Sample set A; (b) Sample set B; (c) Sample set C; (d) Sample set D. It can be seen that in Fig.7(a), 7(b), 7(c), some misjudgment samples appear in the model, but the Bayesian layer successfully issued an \"alarm\" through high uncertainty. In Fig.7(d), all samples are predicted correctly, and the uncertainty is low. In practical applications, this high uncertainty signal can trigger a manual review mechanism to prevent equipment damage caused by wrong decisions. Uncer",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 25,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p25_c69",
+    "text": "l can trigger a manual review mechanism to prevent equipment damage caused by wrong decisions. Uncertainty quantification enables the model to evaluate the confidence of the prediction results through the posterior probability distribution, which effectively makes up for the defect that the traditional deterministic neural network cannot perceive the risk of the decision boundary. 3.3.2. Cross-domain experimental verification 1. Experimental setup This section uses the three transfer tasks mentioned in Section 3.1 for ex- perimental verification. Three representative methods are selected as bench- marks for comparison, which are shown below. (1) DCNN_OSA_ModelBased: This method follows a parameter-transfer 24",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 25,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p26_c70",
+    "text": "method, directly applying the DCNN_OSA model trained on the source- domain data to the target domain. (2) DCNN_OSA_DANN: Domain-adversarial neural network (DANN) [53] is combined on the basis of DCNN_OSA. This model represents the mainstream transfer strategy based on adversarial learning. (3) DCNN_OSA_MMD: Introduce the Maximum Mean Discrepancy (MMD) [54] loss function in the fully connected layer of DCNN_OSA. This rep- resents the mainstream transfer strategy based on metric learning. (4) Proposed Method: The improved method proposed in this paper com- bines DCNN_OSA, explicit high-order difference alignment, and uncertainty- guided feature alignment strategies. To ensure a fair comparison, rigorous hyperparameter tuning was con- ducted for all baseline methods. Under consistent data par",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 26,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p26_c71",
+    "text": ", rigorous hyperparameter tuning was con- ducted for all baseline methods. Under consistent data partitioning and training epochs, critical hyperparameters for each model were optimized through multiple repetitive experiments to identify the configuration that yields the best performance. Consequently, all comparative models reported in this study represent their optimal achievable performance under the cur- rent experimental settings. 2. Experimental results Table 4 lists the mean and standard deviation of test set accuracy for the four models on three transfer tasks. It can be seen that the proposed model achieved the best results in all three tasks, and the average accuracy rate is stable at around 99% (Task A: 99.08%, Task B: 98.89%, Task C: 99.11% ). This proves that this method can e",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 26,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p26_c72",
+    "text": "at around 99% (Task A: 99.08%, Task B: 98.89%, Task C: 99.11% ). This proves that this method can extract domain-invariant features that are insensitive to changes in working conditions. In the most difficult Task B (with the largest difference in working conditions), the accuracy rate of the basic model, ModelBased drops sharply to 77.56%. Although the DANN and MMD methods have improved 86.91% and 91.83%, respectively, there are still obvious misjudgments. 25",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 26,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p27_c73",
+    "text": "Table 4 Performance comparison of different methods on three tasks [mean±std]% Model Task A Task B Task C DCNN_OSA_ModelBased 97.46±0.35 77.56±0.27 96.36±0.34 DCNN_OSA_DANN 92.15±0.61 86.91±0.30 97.54±0.34 DCNN_OSA_MMD 98.00±0.49 91.83±0.33 98.24±0.23 Proposed Model 99.08±0.78 98.89±0.72 99.11±0.38 To facilitate a more intuitive comparison, a radar chart and line trend plot are drawn, as shown in Fig.8. It can be seen that Task B has be- come the \"performance trough\" of all models due to the largest difference in working conditions between the source and target domains. The curves of DCNN_OSA_ModelBased (blue) and DCNN_OSA_DANN (yellow) show a deep \"V\" shape, indicating that these two models are very sensitive to task difficulty. Although DCNN_OSA_MMD (green) has some relief, it still show",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 27,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p27_c74",
+    "text": "are very sensitive to task difficulty. Although DCNN_OSA_MMD (green) has some relief, it still shows obvious foves. The curve of the proposed model (orange) appears as a nearly horizontal straight line, indicating that the model has general- ization consistency for transfer tasks of different difficulties. Fig.8(b) depicts the performance fluctuation of each model when faced with tasks of differ- ent difficulty. The triangle formed by the proposed model (orange) has the largest area, and all three vertices are close to the 1.0 scale mark, showing a full equilateral triangle shape. This shows that the model has no obvious performance shortcomings and performs well in the three tasks. Fig.9 presents violin plots of the accuracies obtained by different models on Task B over multiple independ",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 27,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p27_c75",
+    "text": "resents violin plots of the accuracies obtained by different models on Task B over multiple independent runs. The proposed model (red) has a median close to 0.99, with most data concentrated near the top, indicating high diagnostic accuracy and relatively stable performance. MMD-based method (blue) achieves an average accuracy of about 0.92; although lower than the proposed model, its performance is relatively robust. In contrast, DANN (orange) shows large accuracy fluctuations between 0.86 and 0.88, reflecting the susceptibility of adversarial training to instability around the Nash equilibrium. DCNN_OSA_ModelBased (green) lies predominantly at the bottom, indicating poor adaptation to the target-domain distribution. 26",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 27,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p28_c76",
+    "text": "(a) (b) Fig. 8. Performance comparison of the models on different tasks. (a) Line chart of accuracy change; (b) Comprehensive performance radar charts. Fig. 9. Violin diagram of the accuracy distribution of each model under Task B Fig.10 shows the t-SNE clustering results, comparing the source and target domain feature distributions at different training epochs. Different marker shapes in the figure represent different fault categories (Class 0-4). 27",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 28,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p29_c77",
+    "text": "It can be seen that, after the complete transfer training process, five well- separated clusters emerge from the originally entangled feature space. The source domain samples (purple) and the target domain samples (cyan) are highly overlapped and are tightly mixed, demonstrating that the proposed model has learned domain-invariant fault features. (a) (b) Fig. 10. T-SNE visualization of feature distribution. (a) Initial stage (epoch 0); (b) Final stage (final epoch) The following is an analysis of the uncertainty adaptive weighting mecha- nism proposed in this paper. Fig.11 shows the dynamic evolution process of the model’s prediction uncertainty (blue curve) and corresponding adapter loss weight (red curve) of source domain samples during the training process. As can be seen from the enlar",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 29,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p29_c78",
+    "text": "ight (red curve) of source domain samples during the training process. As can be seen from the enlarged figure, there is a strict Inverse non-linear correlation relationship between uncertainty and weight. In the early stage (Epochs 0–20), the feature extractor has not converged. High uncertainty triggers a safeguard that reduces the weight of the transfer- loss term, allowing the model to prioritize learning discriminative features and avoiding premature alignment. In the later stage (Epochs 20–100), as classification accuracy improves, the MMD weight gradually increases and remains stable. However, the zoomed-in view shows that, for hard samples near the decision boundary, uncertainty briefly rises and causes the weight to drop, preventing forced alignment from disrupting the established",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 29,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p29_c79",
+    "text": "fly rises and causes the weight to drop, preventing forced alignment from disrupting the established decision boundary. In order to verify the influence of the uncertainty-guided Mechanism on the reliability of model decision-making, ablation experiments are conducted on Task 2. Under the same model architecture and hyperparameter set- 28",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 29,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p30_c80",
+    "text": "Fig. 11. Dynamic evolution relationship between prediction uncertainty and adapter weight during training tings, the prediction distributions of the baseline transfer model without uncertainty guidance (Base-TL) and the proposed model with uncertainty guidance (UG-TL) on the test set are compared, as shown in Fig.12. The green scatter dots and red cross signs in the figure represent the samples with correct and wrong predictions, respectively. Comparing the two figures, it can be seen that the correctly predicted samples (green dots) of the Base-TL model show a wide discrete distribution in the vertical axis di- rection, which is visually dispersed. After introducing uncertainty guidance, the green sample points in Fig.12(b) become clearly concentrated near zero (i.e., most predictive unce",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 30,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p30_c81",
+    "text": "e green sample points in Fig.12(b) become clearly concentrated near zero (i.e., most predictive uncertainties fall within the low-uncertainty region), in- dicating that the model assigns high confidence to the majority of correctly predicted samples. A quantitative analysis further shows that 86.78% of cor- rectly predicted samples in the Base-TL model fall within the low-uncertainty region (U < 0.1), whereas this proportion increases to 91.84% for the UG-TL model. The uncertainty is computed from the posterior predictive distribu- tion produced by the proposed Bayesian network via multiple forward passes, and is quantified by the variance across the resulting predictions. The above percentage is obtained by applying a fixed uncertainty threshold to define the low-uncertainty region and th",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 30,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p30_c82",
+    "text": "ge is obtained by applying a fixed uncertainty threshold to define the low-uncertainty region and then calculating the corresponding proportion of samples. This result strongly proves that the uncertainty weighting mechanism 29",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 30,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p31_c83",
+    "text": "induces the model to learn domain-invariant features with clearer boundaries and stronger discrimination, thereby significantly improving the stability and confidence of decision-making while ensuring high accuracy. In safety-critical industrial fault diagnosis, safety misjudgment is far more valuable than blind self-confidence misjudgment. Under the threshold of T=0.1 or 0.4, all the false prediction samples fall into the high uncertainty region. This verifies that the proposed method has reliable and credible diagnosis ability, and effectively identifies high-risk prediction. (a) (b) Fig. 12. Visualization diagram of test set sample confidence and predicted state. (a) Base-TL; (b) UG-TL 4. Conclusion This paper presents a Bayesian uncertainty-guided transfer learning method for gear faul",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 31,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p31_c84",
+    "text": "Conclusion This paper presents a Bayesian uncertainty-guided transfer learning method for gear fault diagnosis under variable operating conditions. Integrating sparse self-attention with an adaptive transfer strategy, the proposed frame- work addresses the challenge of achieving reliable fault diagnosis in complex machinery. It is designed to deliver trustworthy, reliability-centered health 30",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 31,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p32_c85",
+    "text": "assessments for rotating components. In summary, the key conclusions of this work are: 1. The proposed DCNN_OSA model balances CNN’s limited receptive field and Transformer’s high computational cost. It achieved 99.02% accuracy with a single-sample inference time of 0.21 ms. 2. An uncertainty-guided transfer method with joint explicit-implicit do- main alignment is developed. It achieved 98.89% accuracy on the most challenging transfer task (Task B), outperforming MMD and DANN. 3. The Bayesian fully connected layer enables uncertainty-based risk as- sessment. Correct predictions in low-uncertainty regions increase from 86.78% to 91.84%, and all misclassifications are flagged as high-uncertainty. In summary, the proposed method presents a practical and reliable tool for cross-condition gear",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 32,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p32_c86",
+    "text": "nty. In summary, the proposed method presents a practical and reliable tool for cross-condition gear fault diagnosis. This contributes directly to more trustworthy health assessments of safety-critical rotating component. More- over, the proposed method still follows a statistical consistency based trans- fer paradigm. When the discrepancy between the source and target domains is substantial, or when the target domain contains previously unseen fault modes, alignment bias may still occur and lead to negative transfer. In fu- ture work, we will further investigate robust transfer mechanisms for open-set settings and large domain shifts, and incorporate adaptive learning to im- prove the transferability of uncertainty-aware decisions and their practical applicability in engineering scenarios",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 32,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p32_c87",
+    "text": "ferability of uncertainty-aware decisions and their practical applicability in engineering scenarios. Declaration of Competing Interest The authors declare no conflict of interest. Acknowledgments This work was supported in part by the National Key Research and De- velopment Program of China (No. 2024YFB3409100). Data Availability The datasets are publicly available at: https://mahui-neu.github.io/lab- dataset-view/. 31",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 32,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p33_c88",
+    "text": "References [1] G. Kim, J. G. Choi, S. Jeon, S. Park, S. Lim, Towards efficient data- driven fault diagnosis under low-budget scenarios via hybrid deep active learning, Reliability Engineering & System Safety 266 (2025) 111637. [2] M. Meléndez-Useros, F. Viadero-Monasterio, M. Jiménez-Salas, M. J. López-Boada, Active steering fault diagnosis via integrated lstm-based sensor detection and robust actuator fault estimation, Reliability Engi- neering & System Safety 265 (2025) 111573. [3] J. Chen, C. Lin, B. Yao, L. Yang, H. Ge, Intelligent fault diagnosis of rolling bearings with low-quality data: A feature significance and diversity learning method, Reliability Engineering & System Safety 237 (2023) 109343. [4] X. Qiang, X. Chen, C. Wang, Novel convex model-based approach for data-driven faul",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 33,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p33_c89",
+    "text": "2023) 109343. [4] X. Qiang, X. Chen, C. Wang, Novel convex model-based approach for data-driven fault diagnosis considering uncertainty, Reliability Engineer- ing & System Safety (2025) 111714. [5] A. Abid, M. T. Khan, J. Iqbal, A review on fault detection and diagno- sis techniques: basics and beyond, Artificial Intelligence Review 54 (5) (2021) 3639–3664. [6] M. A. Saleh, A. Ghrayeb, S. S. Refaat, H. Abu-Rub, S. P. Khatri, J. Kammermann, Attention-enhanced agru framework for induction mo- tor incipient fault diagnosis in electric vehicles, IEEE Transactions on Instrumentation and Measurement 74 (2025) 1–17. [7] J. Zhuang, J. Wu, G. Pei, W. Li, G. Xin, C. Ma, K. Feng, L. Zhang, C. Yang, A neuro-fuzzy approach with hypergraph convolution for fault diagnosis in industrial devices, Journal o",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 33,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p33_c90",
+    "text": "euro-fuzzy approach with hypergraph convolution for fault diagnosis in industrial devices, Journal of Reliability Science and Engi- neering 1 (3) (2025) 035301. [8] S. Liu, H. Jiang, Z. Wu, Z. Yi, R. Wang, Intelligent fault diagnosis of rotating machinery using a multi-source domain adaptation network with adversarial discrepancy matching, Reliability Engineering & Sys- tem Safety 231 (2023) 109036. [9] L. Jiang, C. Shi, H. Sheng, X. Li, T. Yang, Lightweight cnn architec- ture design for rolling bearing fault diagnosis, Measurement Science and Technology 35 (12) (2024) 126142. 32",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 33,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p34_c91",
+    "text": "[10] Q. Wang, Z. Sun, Y. Zhu, C. Song, D. Li, Intelligent fault diagnosis al- gorithm of rolling bearing based on optimization algorithm fusion con- volutional neural network, Mathematical Biosciences and Engineering 20 (11) (2023) 19963–19982. [11] L. Ding, H. Guo, L. Bian, Convolutional neural networks based on reso- nance demodulation of vibration signal for rolling bearing fault diagnosis in permanent magnet synchronous motors, Energies 17 (17) (2024). [12] R. Wang, E. Dong, Z. Cheng, Z. Liu, X. Jia, Transformer-based intelli- gent fault diagnosis methods of mechanical equipment: A survey, Open Physics 22 (1) (2024) 20240015. [13] C. Wang, B. Tian, J. Yang, H. Jie, Y. Chang, Z. Zhao, Neural- transformer: A brain-inspired lightweight mechanical fault diagnosis method under noise, Reliab",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 34,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p34_c92",
+    "text": "ral- transformer: A brain-inspired lightweight mechanical fault diagnosis method under noise, Reliability Engineering & System Safety 251 (2024) 110409. [14] J. Zhao, J. Li, Z. Li, Z. Ma, Transformer network enhanced by dual convolutional neural network and cross-attention for wheelset bearing fault diagnosis, Frontiers in Physics Volume 13 - 2025 (2025) 1546620. [15] Y. Keshun, W. Puzhou, H. Peng, G. Yingkui, A sound-vibration physical-information fusion constraint-guided deep learning method for rolling bearing fault diagnosis, Reliability Engineering & System Safety 253 (2025) 110556. [16] C. Wang, M. Wang, A fault diagnosis method for rotating machinery based on spatiotemporal feature fusion, Journal of Mechanical Science and Technology 39 (8) (2025) 4389–4405. [17] Z. Zhou, Q. Ai, P.",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 34,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p34_c93",
+    "text": "sion, Journal of Mechanical Science and Technology 39 (8) (2025) 4389–4405. [17] Z. Zhou, Q. Ai, P. Lou, J. Hu, J. Yan, A novel method for rolling bear- ing fault diagnosis based on gramian angular field and cnn-vit, Sensors 24 (12) (2024) 3967. [18] Z. Lu, L. Liang, J. Zhu, W. Zou, L. Mao, Rotating machinery fault di- agnosis under multiple working conditions via a time-series transformer enhanced by convolutional neural network, IEEE Transactions on In- strumentation and Measurement 72 (2023) 1–11. 33",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 34,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p35_c94",
+    "text": "[19] S. Yan, H. Shao, J. Wang, X. Zheng, B. Liu, Liconvformer: A lightweight fault diagnosis framework using separable multiscale convolution and broadcast self-attention, Expert Systems with Applications 237 (2024) 121338. [20] K. Yin, C. Chen, Q. Shen, J. Deng, A lightweight and rapidly converging transformer based on separable linear self-attention for fault diagnosis, Measurement Science and Technology 36 (1) (2024) 0161b4. [21] M. S. Azari, S. Santini, F. Edrisi, F. Flammini, Self-adaptive fault di- agnosis for unseen working conditions based on digital twins and do- main generalization, Reliability Engineering & System Safety 254 (2025) 110560. [22] S. Tang, J. Ma, Z. Yan, Y. Zhu, B. C. Khoo, Deep transfer learning strategy in intelligent fault diagnosis of rotating machinery, Engine",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 35,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p35_c95",
+    "text": ". Khoo, Deep transfer learning strategy in intelligent fault diagnosis of rotating machinery, Engineering Applications of Artificial Intelligence 134 (2024) 108678. [23] I. Misbah, C. LEE, K. KEUNG, Fault diagnosis in rotating machines based on transfer learning: Literature review, Knowledge-Based Systems 283 (2024) 111158. [24] Y. Guo, J. Zhang, B. Sun, Y. Wang, Adversarial deep transfer learning in fault diagnosis: Progress, challenges, and future prospects, Sensors 23 (16) (2023) 7263. [25] M. S. Rathore, S. P. Harsha, Unsupervised domain deep transfer learning approach for rolling bearing remaining useful life estimation, Journal of Computing and Information Science in Engineering 24 (2) (2023) 021002. [26] Q. Qian, Y. Wang, T. Zhang, Y. Qin, Maximum mean square discrep- ancy: A new di",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 35,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p35_c96",
+    "text": "(2023) 021002. [26] Q. Qian, Y. Wang, T. Zhang, Y. Qin, Maximum mean square discrep- ancy: A new discrepancy representation metric for mechanical fault transfer diagnosis, Knowledge-Based Systems 276 (2023) 110748. [27] J. Li, Z. Ye, J. Gao, Z. Meng, K. Tong, S. Yu, Fault transfer diagnosis of rolling bearings across different devices via multi-domain informa- tion fusion and multi-kernel maximum mean discrepancy, Applied Soft Computing 159 (2024) 111620. 34",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 35,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p36_c97",
+    "text": "[28] S. Li, Q. Jiang, Y. Xu, K. Feng, Z. Zhao, B. Sun, G. Q. Huang, Digi- tal twin-assisted interpretable transfer learning: A novel wavelet-based framework for intelligent fault diagnostics from simulated domain to real industrial domain, Advanced Engineering Informatics 62 (2024) 102681. [29] C. Liu, F. Dong, A new framework based on supervised joint distribution adaptation for bearing fault diagnosis across diverse working conditions, Shock and Vibration 2024 (1) (2024) 8296809. [30] W. Shi, D. Liu, D. Tan, B. Zheng, A dynamically class-wise weight- ing mechanism for unsupervised cross-domain object detection under universal scenarios, Knowledge-Based Systems 299 (2024) 111987. [31] W. Zhang, L. Deng, L. Zhang, D. Wu, A survey on negative transfer, IEEE/CAA Journal of Automatica Sinica",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 36,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p36_c98",
+    "text": "ang, L. Deng, L. Zhang, D. Wu, A survey on negative transfer, IEEE/CAA Journal of Automatica Sinica 10 (2) (2023) 305–329. [32] Y. Yu, H. R. Karimi, L. Gelman, J. Tian, P. Mei, A novel multi-source sensor correlation adaptive fusion framework with uncertainty quantifi- cation for intelligent fault diagnosis, Reliability Engineering & System Safety 267 (2025) 111812. [33] Y. Guo, Z. Cheng, J. Zhang, B. Sun, Y. Wang, A review on adversarial– based deep transfer learning mechanical fault diagnosis, Journal of Big Data 11 (1) (2024) 151. [34] Y. Xiao, H. Shao, J. Wang, S. Yan, B. Liu, Bayesian variational trans- former: A generalizable model for rotating machinery fault diagnosis, Mechanical Systems and Signal Processing 207 (2024) 110936. [35] L. Das, B. Gjorgiev, G. Sansavini, Uncertainty-aw",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 36,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p36_c99",
+    "text": "tems and Signal Processing 207 (2024) 110936. [35] L. Das, B. Gjorgiev, G. Sansavini, Uncertainty-aware deep learning for monitoring and fault diagnosis from synthetic data, Reliability Engi- neering & System Safety 251 (2024) 110386. [36] J. Ren, J. Wen, Z. Zhao, R. Yan, X. Chen, A. K. Nandi, Uncertainty- aware deep learning: A promising tool for trustworthy fault diagnosis, IEEE/CAA Journal of Automatica Sinica 11 (6) (2024) 1317–1330. [37] J. Blair, O. Amin, B. D. Brown, S. McArthur, A. Forbes, B. Stephen, The transfer learning of uncertainty quantification for industrial plant fault diagnosis system design, Data-Centric Engineering 5 (2024) e41. 35",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 36,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p37_c100",
+    "text": "[38] S. Pathrudkar, P. Thiagarajan, S. Agarwal, A. S. Banerjee, S. Ghosh, Electronic structure prediction of multi-million atom systems through uncertainty quantification enabled transfer learning, npj Computational Materials 10 (1) (2024) 175. [39] F. Chollet, Xception: Deep learning with depthwise separable convo- lutions, in: 2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2017, pp. 1800–1807. [40] M. Lin, Q. Chen, S. Yan, Network in network, arXiv preprint arXiv:1312.4400 (2013). [41] H. Wu, B. Xiao, N. Codella, M. Liu, X. Dai, L. Yuan, L. Zhang, Cvt: Introducing convolutions to vision transformers, in: 2021 IEEE/CVF International Conference on Computer Vision (ICCV), 2021, pp. 22–31. [42] J. Yuan, H. Gao, D. Dai, J. Luo, L. Zhao, Z. Zhang, Z. Xie, Y. Wei, L. Wa",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 37,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p37_c101",
+    "text": "CV), 2021, pp. 22–31. [42] J. Yuan, H. Gao, D. Dai, J. Luo, L. Zhao, Z. Zhang, Z. Xie, Y. Wei, L. Wang, Z. Xiao, et al., Native sparse attention: Hardware-aligned and natively trainable sparse attention, in: Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), 2025, pp. 23078–23097. [43] A. Rivas, G. K. Delipei, I. Davis, S. Bhongale, J. Yang, J. Hou, A com- ponent diagnostic and prognostic framework for pump bearings based on deep learning with data augmentation, Reliability Engineering & System Safety 247 (2024) 110121. [44] S. Garg, S. Chakraborty, VB-DeepONet: A Bayesian operator learning framework for uncertainty quantification, Engineering Applications of Artificial Intelligence 118 (2023) 105685. [45] Y. Chen, E. Patelli, B",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 37,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p37_c102",
+    "text": ", Engineering Applications of Artificial Intelligence 118 (2023) 105685. [45] Y. Chen, E. Patelli, B. Edwards, M. Beer, A Bayesian Augmented- Learning framework for spectral uncertainty quantification of incom- plete records of stochastic processes, Mechanical Systems and Signal Processing 200 (2023) 110573. [46] A. Gretton, K. M. Borgwardt, M. J. Rasch, B. Schoelkopf, A. Smola, A Kernel Two-Sample Test, Journal of Machine Learning Research 13 (2012) 723–773. 36",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 37,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p38_c103",
+    "text": "[47] B. Sun, J. Feng, K. Saenko, Correlation alignment for unsupervised domain adaptation, in: Domain adaptation in computer vision applica- tions, Springer, 2017, pp. 153–171. [48] C. Fan, Y. Zhang, H. Ma, K. Yu, Z. Ma, A novel lightweight ddpm-based data augmentation method for rotating machinery fault diagnosis with small sample, Mechanical Systems and Signal Processing 232 (2025) 112741. [49] W. Zhang, G. Peng, C. Li, Y. Chen, Z. Zhang, A New Deep Learning Model for Fault Diagnosis with Good Anti-Noise and Domain Adapta- tion Ability on Raw Vibration Signals, Sensors 17 (2) (2017) 425. [50] F. Ying, X. Yu, J. Cao, P. Li, L. Yang, Y. Guo, Real-time detection of rotor misalignment using a non-contact triboelectric sensor integrated with deep learning, Measurement 257 (2026) 118704. [51]",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 38,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p38_c104",
+    "text": "non-contact triboelectric sensor integrated with deep learning, Measurement 257 (2026) 118704. [51] Q. Wen, T. Zhou, C. Zhang, W. Chen, Z. Ma, J. Yan, L. Sun, Trans- formers in time series: A survey (2023). arXiv:2202.07125. [52] Y. Chang, F. Li, J. Chen, Y. Liu, Z. Li, Efficient temporal flow trans- former accompanied with multi-head probsparse self-attention mecha- nism for remaining useful life prognostics, Reliability Engineering & System Safety 226 (2022) 108701. [53] Q. Wang, G. Michau, O. Fink, Domain adaptive transfer learning for fault diagnosis, in: 2019 Prognostics and System Health Management Conference (PHM-Paris), 2019, pp. 279–285. [54] Y. Li, C. Fu, T. Liu, Z. Hu, G. Song, Two-stage remaining useful life prediction method across operating conditions based on small samples a",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 38,
+    "metadata": {
+      "type": "pdf"
+    }
+  },
+  {
+    "chunk_id": "111_p39_c105",
+    "text": "Declaration of interests The authors declare that they have no known competing financial inter- ests or personal relationships that could have appeared to influence the work reported in this paper. 38",
+    "source": "C:\\Users\\LLL\\Zotero\\storage\\XRBKTWTC\\111.pdf",
+    "page": 39,
+    "metadata": {
+      "type": "pdf"
+    }
+  }
+]

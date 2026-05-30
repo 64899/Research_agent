@@ -3,17 +3,17 @@ index:
   eval_file: data/eval/questions.jsonl
 
 retrieval:
-  retriever: bm25
+  retriever: bm25  # options: bm25, dense, hybrid
   top_k: 3
   alpha: 0.3
 
 rerank:
-  enabled: false
+  enabled: True
   candidate_k: 10
   model_name: cross-encoder/ms-marco-MiniLM-L-6-v2
 
 llm:
-  provider: mock
+  provider: vllm  # options: vllm, mock
   base_url: http://localhost:7890/v1
   api_key: abc123
   model_name: X

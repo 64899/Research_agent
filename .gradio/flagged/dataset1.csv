@@ -1,0 +1,12 @@
+Config,Query,Result,timestamp
+mock,21去,,2026-05-30 17:48:57.729181
+mock,你好,"Type: answer
+Input: 你好
+
+Answer:
+This is a mock answer. LLM generation is not connected yet, but retrieval and prompt construction are working.
+
+Sources:
+[1] data/raw/test.pdf, page 15, chunk_id=test_p15_c91
+[2] data/raw/test.pdf, page 15, chunk_id=test_p15_c90
+[3] data/raw/test.pdf, page 15, chunk_id=test_p15_c89",2026-05-30 17:49:53.413649

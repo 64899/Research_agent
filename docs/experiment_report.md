@@ -670,7 +670,7 @@ ResearchAgent.run(user_input)
 
 - 这是最小可控 Agent，不是语言级 Agent。
 - 优点是稳定、可解释、便于调试。
-- 后续如果需要更灵活的工具选择，可以在扩展阶段升级为 LLM Router。
+- 后续 Agent 能力将按 LLM Router、Structured Tool Calling、Multi-step Agent 逐步增强。
 
 ### 验收命令
 
@@ -1003,3 +1003,218 @@ logs/research_agent.log
 - 整理项目架构图和演示文档；
 - 完善 README、实验表格和面试讲解材料；
 - 后续再考虑多论文管理、批量建索引、OCR、图表理解等增强能力。
+
+## V0.7 初步实验：Documentation + Minimal Web UI
+
+### 实验目标
+
+V0.7 的目标是把项目从“可运行”整理成“可展示、可复盘、可讲解”的状态。本阶段不新增新的检索算法，也不改变核心 RAG 逻辑，而是补齐展示文档和最小 Web UI。
+
+本阶段重点：
+
+```text
+架构说明
+Demo 指南
+Minimal Gradio Web UI
+Web UI 临时 PDF 索引
+```
+
+### 新增和更新文件
+
+```text
+docs/architecture.md
+docs/demo_guide.md
+README_0.7.md
+scripts/web_demo.py
+```
+
+### Web UI 功能
+
+当前 Web UI 入口：
+
+```powershell
+python -m scripts.web_demo
+```
+
+页面支持：
+
+- 指定 `Config path`；
+- 指定 `Index dir override`；
+- 指定本机 `PDF path`；
+- 点击 `Build Web UI Index` 构建临时索引；
+- 点击 `Run Agent` 执行 Agent；
+- 分区显示 `Answer`、`Sources`、`Chunks`、`Metrics`。
+
+### Web UI 建索引流程
+
+当用户输入 PDF 路径并点击 `Build Web UI Index` 后，系统执行：
+
+```text
+PDF path
+↓
+load_pdf
+↓
+chunk_documents
+↓
+EmbeddingModel
+↓
+VectorStore.build/save
+↓
+BM25Index.build/save
+↓
+data/index/webui_demo
+```
+
+当前策略：
+
+```text
+每次构建都会覆盖 data/index/webui_demo
+```
+
+这样做的原因是：
+
+- V0.7 是演示版，不做多论文管理；
+- 固定临时索引目录可以降低状态复杂度；
+- 用户知道当前 `webui_demo` 一定对应最近一次构建的 PDF。
+
+### Web UI 问答流程
+
+点击 `Run Agent` 后：
+
+```text
+Config path
+Index dir override
+Query
+↓
+build_agent
+↓
+ResearchAgent.run
+↓
+answer / retrieve / evaluate
+↓
+Answer / Sources / Chunks / Metrics
+```
+
+其中：
+
+- `Config path` 负责读取 retriever、top_k、rerank、LLM 和 logging 参数；
+- `Index dir override` 负责决定当前问答读取哪个索引；
+- 如果刚刚构建了 Web UI 索引，默认读取 `data/index/webui_demo`。
+
+### 评估边界
+
+Web UI 可以对任意文字版 PDF 做问答和检索展示，但检索评测需要配套的人工标注文件。
+
+可靠评测需要：
+
+```text
+index_dir 与 eval_file 对应同一篇 PDF
+```
+
+例如：
+
+```text
+data/index/test_index
+data/eval/questions.jsonl
+```
+
+如果 Web UI 用另一个 PDF 覆盖构建了：
+
+```text
+data/index/webui_demo
+```
+
+但仍然使用旧的：
+
+```text
+data/eval/questions.jsonl
+```
+
+则 Metrics 不可靠。此时应主要查看：
+
+```text
+Answer
+Sources
+Chunks
+```
+
+并人工判断检索证据是否支持回答。
+
+### 当前结论
+
+V0.7 已经完成展示与包装的最小闭环：
+
+```text
+Architecture doc
+↓
+Demo guide
+↓
+README_0.7
+↓
+Minimal Web UI
+```
+
+当前主要收益：
+
+- 项目结构可以通过 `docs/architecture.md` 讲清楚；
+- 演示流程可以通过 `docs/demo_guide.md` 复现；
+- Web UI 可以用本机 PDF 路径构建临时索引；
+- Web UI 可以展示回答、来源、原始 chunk 和指标；
+- CLI 与 Web UI 共享同一套后端 RAG / Agent 逻辑。
+
+当前限制：
+
+- Web UI 不是生产级应用；
+- 只支持本机 PDF 路径，不支持真正浏览器文件上传；
+- 只维护一个临时索引 `data/index/webui_demo`；
+- 临时 PDF 没有配套 eval_file 时，Metrics 不可靠；
+- 仍不支持多论文管理、OCR、图表理解和多轮对话。
+
+### 下一步
+
+进入下一阶段 Agent 路线：
+
+```text
+V0.8 LLM Router
+V0.9 LLM Structured Tool Calling
+V1.0 Multi-step Agent
+```
+
+设计意图是先保证工具链路稳定，再逐步增强工具选择和执行能力。
+
+V0.8 的目标是把当前规则级 intent 判断：
+
+```text
+关键词匹配 → answer / retrieve / evaluate
+```
+
+升级为：
+
+```text
+LLM 判断用户意图 → answer / retrieve / evaluate
+```
+
+V0.9 的目标是让 LLM 输出规范 tool call JSON：
+
+```json
+{
+  "tool": "answer_question",
+  "arguments": {
+    "query": "...",
+    "top_k": 3,
+    "rerank": true
+  }
+}
+```
+
+V1.0 的目标是支持有限步数的多轮工具调用：
+
+```text
+tool call
+↓
+observation
+↓
+next tool call 或 final answer
+```
+
+V1.0 需要限制最大步数，避免 Agent 无限循环。

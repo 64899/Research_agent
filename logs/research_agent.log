@@ -58,3 +58,268 @@
 2026-05-30 12:43:39 | INFO | research_agent | evaluation_finished mean_hit=1.0000 mean_recall=0.6111 mean_mrr=0.8333
 2026-05-30 12:43:39 | INFO | research_agent | intent=evaluate
 2026-05-30 12:43:39 | INFO | research_agent | Agent finished
+2026-05-30 13:10:37 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 13:10:37 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 13:10:37 | INFO | research_agent_web | rag_tool_started
+2026-05-30 13:10:37 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 13:10:37 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+2026-05-30 13:10:37 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 13:10:37 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 13:10:37 | INFO | research_agent_web | prompt_built
+2026-05-30 13:10:37 | INFO | research_agent_web | llm=vllm
+2026-05-30 13:10:40 | INFO | research_agent_web | answer_generated
+2026-05-30 17:48:35 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 17:48:35 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 17:48:35 | INFO | research_agent_web | rag_tool_started
+2026-05-30 17:48:35 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 17:48:35 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+2026-05-30 17:48:35 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 17:48:35 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 17:48:35 | INFO | research_agent_web | prompt_built
+2026-05-30 17:48:35 | INFO | research_agent_web | llm=vllm
+2026-05-30 17:49:46 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 17:49:46 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 17:49:46 | INFO | research_agent_web | rag_tool_started
+2026-05-30 17:49:46 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 17:49:46 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+2026-05-30 17:49:46 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 17:49:46 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 17:49:46 | INFO | research_agent_web | prompt_built
+2026-05-30 17:49:46 | INFO | research_agent_web | llm=mock
+2026-05-30 17:49:46 | INFO | research_agent_web | answer_generated
+2026-05-30 18:07:51 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:07:51 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:07:51 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:07:51 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:07:51 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+2026-05-30 18:07:51 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:07:51 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:07:51 | INFO | research_agent_web | prompt_built
+2026-05-30 18:07:51 | INFO | research_agent_web | llm=mock
+2026-05-30 18:07:51 | INFO | research_agent_web | answer_generated
+2026-05-30 18:10:29 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:10:29 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:10:29 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:10:29 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:10:29 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:10:37 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:10:37 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:10:37 | INFO | research_agent_web | prompt_built
+2026-05-30 18:10:37 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:18:45 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:18:45 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:18:45 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:18:45 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:18:45 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:18:53 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:18:53 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:18:53 | INFO | research_agent_web | prompt_built
+2026-05-30 18:18:53 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:18:55 | INFO | research_agent_web | answer_generated
+2026-05-30 18:19:44 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:19:44 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:19:44 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:19:44 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:19:44 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:19:52 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:19:52 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:19:52 | INFO | research_agent_web | prompt_built
+2026-05-30 18:19:52 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:19:52 | INFO | research_agent_web | answer_generated
+2026-05-30 18:20:33 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:20:33 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:20:33 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:20:33 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:20:33 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:20:41 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:20:41 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:20:41 | INFO | research_agent_web | prompt_built
+2026-05-30 18:20:41 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:20:43 | INFO | research_agent_web | answer_generated
+2026-05-30 18:22:58 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:22:58 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:22:58 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:22:58 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:22:58 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:23:06 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:23:06 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:23:06 | INFO | research_agent_web | prompt_built
+2026-05-30 18:23:06 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:23:08 | INFO | research_agent_web | answer_generated
+2026-05-30 18:25:29 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:25:29 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:25:29 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:25:29 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:25:29 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:25:35 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:25:35 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:25:35 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:25:35 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:25:35 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:25:53 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:25:53 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:25:53 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:25:53 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:25:53 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:26:01 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:26:01 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:26:01 | INFO | research_agent_web | prompt_built
+2026-05-30 18:26:01 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:26:01 | INFO | research_agent_web | answer_generated
+2026-05-30 18:26:09 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:26:09 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:26:09 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:26:09 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:26:09 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:26:16 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:26:16 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:26:16 | INFO | research_agent_web | prompt_built
+2026-05-30 18:26:16 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:26:18 | INFO | research_agent_web | answer_generated
+2026-05-30 18:27:04 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:27:04 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:27:04 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:27:04 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:27:04 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:27:12 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:27:12 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:27:12 | INFO | research_agent_web | prompt_built
+2026-05-30 18:27:12 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:27:12 | INFO | research_agent_web | answer_generated
+2026-05-30 18:28:08 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:28:08 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:28:08 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:28:08 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:28:08 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:28:15 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:28:15 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:28:15 | INFO | research_agent_web | prompt_built
+2026-05-30 18:28:15 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:28:16 | INFO | research_agent_web | answer_generated
+2026-05-30 18:29:08 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:29:08 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:29:08 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:29:08 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:29:08 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:29:15 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:29:15 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:29:15 | INFO | research_agent_web | prompt_built
+2026-05-30 18:29:15 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:29:16 | INFO | research_agent_web | answer_generated
+2026-05-30 18:29:21 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:29:21 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:29:21 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:29:21 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:29:21 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:29:28 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:29:28 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:29:28 | INFO | research_agent_web | prompt_built
+2026-05-30 18:29:28 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:29:29 | INFO | research_agent_web | answer_generated
+2026-05-30 18:55:59 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:55:59 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:55:59 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:55:59 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:55:59 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:56:07 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:56:07 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:56:07 | INFO | research_agent_web | prompt_built
+2026-05-30 18:56:07 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:56:09 | INFO | research_agent_web | answer_generated
+2026-05-30 18:56:33 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:56:33 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:56:33 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:56:33 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:56:33 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:56:41 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:56:41 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:56:41 | INFO | research_agent_web | prompt_built
+2026-05-30 18:56:41 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:56:41 | INFO | research_agent_web | answer_generated
+2026-05-30 18:57:48 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:57:48 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:57:48 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:57:48 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:57:48 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:57:55 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:57:55 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:57:55 | INFO | research_agent_web | prompt_built
+2026-05-30 18:57:55 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:57:56 | INFO | research_agent_web | answer_generated
+2026-05-30 18:58:49 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 18:58:49 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 18:58:49 | INFO | research_agent_web | rag_tool_started
+2026-05-30 18:58:49 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 18:58:49 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 18:58:56 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 18:58:56 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 18:58:56 | INFO | research_agent_web | prompt_built
+2026-05-30 18:58:56 | INFO | research_agent_web | llm=vllm
+2026-05-30 18:58:58 | INFO | research_agent_web | answer_generated
+2026-05-30 19:00:04 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 19:00:04 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 19:00:04 | INFO | research_agent_web | rag_tool_started
+2026-05-30 19:00:04 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 19:00:04 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 19:00:12 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 19:00:12 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 19:00:12 | INFO | research_agent_web | prompt_built
+2026-05-30 19:00:12 | INFO | research_agent_web | llm=vllm
+2026-05-30 19:00:12 | INFO | research_agent_web | answer_generated
+2026-05-30 19:00:50 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 19:00:50 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 19:00:50 | INFO | research_agent_web | rag_tool_started
+2026-05-30 19:00:50 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 19:00:50 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 19:00:57 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 19:00:57 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 19:00:57 | INFO | research_agent_web | prompt_built
+2026-05-30 19:00:57 | INFO | research_agent_web | llm=vllm
+2026-05-30 19:00:58 | INFO | research_agent_web | answer_generated
+2026-05-30 19:06:02 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 19:06:02 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 19:06:02 | INFO | research_agent_web | rag_tool_started
+2026-05-30 19:06:02 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 19:06:02 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 19:06:13 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 19:06:13 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 19:06:13 | INFO | research_agent_web | prompt_built
+2026-05-30 19:06:13 | INFO | research_agent_web | llm=vllm
+2026-05-30 19:06:13 | INFO | research_agent_web | answer_generated
+2026-05-30 19:06:19 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 19:06:19 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 19:06:19 | INFO | research_agent_web | rag_tool_started
+2026-05-30 19:06:19 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 19:06:19 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 19:06:27 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 19:06:27 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 19:06:27 | INFO | research_agent_web | prompt_built
+2026-05-30 19:06:27 | INFO | research_agent_web | llm=vllm
+2026-05-30 19:06:27 | INFO | research_agent_web | answer_generated
+2026-05-30 19:06:52 | INFO | research_agent_web | detected_intent=answer
+2026-05-30 19:06:52 | INFO | research_agent_web | calling_tool=answer_question
+2026-05-30 19:06:52 | INFO | research_agent_web | rag_tool_started
+2026-05-30 19:06:52 | INFO | research_agent_web | retrieval_tool_started
+2026-05-30 19:06:52 | INFO | research_agent_web | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 19:07:00 | INFO | research_agent_web | retrieval_finished results=3
+2026-05-30 19:07:00 | INFO | research_agent_web | retrieved_chunks=3
+2026-05-30 19:07:00 | INFO | research_agent_web | prompt_built
+2026-05-30 19:07:00 | INFO | research_agent_web | llm=vllm
+2026-05-30 19:07:02 | INFO | research_agent_web | answer_generated
+2026-05-30 19:07:56 | INFO | research_agent_web | detected_intent=evaluate
+2026-05-30 19:07:56 | INFO | research_agent_web | calling_tool=evaluate_retrieval_tool
+2026-05-30 19:07:56 | INFO | research_agent_web | evaluation_tool_started
+2026-05-30 19:07:56 | INFO | research_agent_web | evaluation_config: eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 19:07:56 | INFO | research_agent_web | evaluation_questions=3
+2026-05-30 19:08:04 | INFO | research_agent_web | evaluation_finished mean_hit=0.3333 mean_recall=0.1667 mean_mrr=0.1111
+2026-05-30 19:08:23 | INFO | research_agent_web | detected_intent=evaluate
+2026-05-30 19:08:23 | INFO | research_agent_web | calling_tool=evaluate_retrieval_tool
+2026-05-30 19:08:23 | INFO | research_agent_web | evaluation_tool_started
+2026-05-30 19:08:23 | INFO | research_agent_web | evaluation_config: eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 19:08:23 | INFO | research_agent_web | evaluation_questions=3
+2026-05-30 19:08:31 | INFO | research_agent_web | evaluation_finished mean_hit=0.3333 mean_recall=0.1667 mean_mrr=0.1111
+2026-05-30 19:13:26 | INFO | research_agent_web | detected_intent=evaluate
+2026-05-30 19:13:26 | INFO | research_agent_web | calling_tool=evaluate_retrieval_tool
+2026-05-30 19:13:26 | INFO | research_agent_web | evaluation_tool_started
+2026-05-30 19:13:26 | INFO | research_agent_web | evaluation_config: eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=True, candidate_k=10
+2026-05-30 19:13:26 | INFO | research_agent_web | evaluation_questions=3
