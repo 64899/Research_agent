@@ -2,6 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
+from src.config.config_loader import load_config
 from src.embeddings.embedding_model import EmbeddingModel
 from src.evaluation.retrieval_eval import evaluate_results,load_eval_questions
 from src.index.bm25_index import BM25Index
@@ -88,37 +89,80 @@ def save_eval_output(output_file: str, payload: dict) -> None:
         json.dump(payload, file, ensure_ascii=False, indent=2)
 
 
+def get_config_value(config: dict, section: str, key: str, default=None):
+    if not config:
+        return default
+
+    section_config = config.get(section, {})
+
+    if not isinstance(section_config, dict):
+        return default
+
+    return section_config.get(key, default)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate retrieval quality.")
-    parser.add_argument("--index_dir", required=True, help="Directory of the built index.")
-    parser.add_argument("--eval_file", required=True, help="Path to eval questions jsonl.")
-    parser.add_argument("--retriever",choices=["dense", "bm25", "hybrid"],default="dense",help="Retriever backend to evaluate.",)
-    parser.add_argument("--top_k", type=int, default=3, help="Number of retrieved chunks.")
-    parser.add_argument("--alpha", type=float, default=0.5, help="Hybrid retrieval dense weight.")
+    parser.add_argument("--config", help="Path to YAML config file.")
+    parser.add_argument("--index_dir", help="Directory of the built index.")
+    parser.add_argument("--eval_file", help="Path to eval questions jsonl.")
+    parser.add_argument("--retriever",choices=["dense", "bm25", "hybrid"],default=None,help="Retriever backend to evaluate.",)
+    parser.add_argument("--top_k", type=int, default=None, help="Number of retrieved chunks.")
+    parser.add_argument("--alpha", type=float, default=None, help="Hybrid retrieval dense weight.")
     parser.add_argument("--rerank", action="store_true", help="Enable reranking.")
-    parser.add_argument("--candidate_k", type=int, default=10, help="Number of candidates before reranking.")
-    parser.add_argument("--reranker_model",default="cross-encoder/ms-marco-MiniLM-L-6-v2",help="Reranker model name.",)
+    parser.add_argument("--candidate_k", type=int, default=None, help="Number of candidates before reranking.")
+    parser.add_argument("--reranker_model",default=None,help="Reranker model name.",)
     parser.add_argument("--show_results", action="store_true", help="Show retrieved chunk details.")
     parser.add_argument("--output_file", help="Optional path to save evaluation results as JSON.")
 
     args = parser.parse_args()
 
-    questions = load_eval_questions(args.eval_file)
-    retriever = load_retriever(args.index_dir, args.retriever, args.alpha)
+    config = {}
+    if args.config:
+        config = load_config(args.config)
+
+    index_dir = args.index_dir or get_config_value(config, "index", "index_dir")
+    eval_file = args.eval_file or get_config_value(config, "index", "eval_file")
+
+    retriever_name = args.retriever or get_config_value(config, "retrieval", "retriever", "dense")
+    top_k = args.top_k if args.top_k is not None else get_config_value(config, "retrieval", "top_k", 3)
+    alpha = args.alpha if args.alpha is not None else get_config_value(config, "retrieval", "alpha", 0.5)
+
+    rerank = args.rerank or get_config_value(config, "rerank", "enabled", False)
+    candidate_k = (
+        args.candidate_k
+        if args.candidate_k is not None
+        else get_config_value(config, "rerank", "candidate_k", 10)
+    )
+    reranker_model = args.reranker_model or get_config_value(
+        config,
+        "rerank",
+        "model_name",
+        "cross-encoder/ms-marco-MiniLM-L-6-v2",
+    )
+
+    if not index_dir:
+        raise ValueError("index_dir must be provided by --index_dir or config file")
+
+    if not eval_file:
+        raise ValueError("eval_file must be provided by --eval_file or config file")
+
+    questions = load_eval_questions(eval_file)
+    retriever = load_retriever(index_dir, retriever_name, alpha)
 
     reranker = None
-    if args.rerank:
-        reranker = Reranker(args.reranker_model)
+    if rerank:
+        reranker = Reranker(reranker_model)
 
-    print(f"Rerank: {args.rerank}")
-    if args.rerank:
-        print(f"Candidate k: {args.candidate_k}")
-        print(f"Reranker model: {args.reranker_model}")
+    print(f"Rerank: {rerank}")
+    if rerank:
+        print(f"Candidate k: {candidate_k}")
+        print(f"Reranker model: {reranker_model}")
 
-    print(f"Index directory: {args.index_dir}")
-    print(f"Eval file: {args.eval_file}")
-    print(f"Retriever: {args.retriever}")
-    print(f"Top k: {args.top_k}")
+    print(f"Index directory: {index_dir}")
+    print(f"Eval file: {eval_file}")
+    print(f"Retriever: {retriever_name}")
+    print(f"Top k: {top_k}")
     print(f"Questions: {len(questions)}")
     print(f"Loaded retriever: {type(retriever).__name__}")
     print()
@@ -130,11 +174,11 @@ def main() -> None:
         query = question["query"]
         expected_pages = question["expected_pages"]
 
-        retrieval_k = args.candidate_k if args.rerank else args.top_k
+        retrieval_k = candidate_k if rerank else top_k
         results = retriever.search(query, top_k=retrieval_k)
 
         if reranker is not None:
-            results = reranker.rerank(query, results, top_k=args.top_k)
+            results = reranker.rerank(query, results, top_k=top_k)
 
         report = evaluate_results(results, expected_pages)
         reports.append(report)
@@ -176,14 +220,14 @@ def main() -> None:
     if args.output_file:
         payload = {
             "config": {
-                "index_dir": args.index_dir,
-                "eval_file": args.eval_file,
-                "retriever": args.retriever,
-                "top_k": args.top_k,
-                "alpha": args.alpha,
-                "rerank": args.rerank,
-                "candidate_k": args.candidate_k if args.rerank else None,
-                "reranker_model": args.reranker_model if args.rerank else None,
+                "index_dir": index_dir,
+                "eval_file": eval_file,
+                "retriever": retriever_name,
+                "top_k": top_k,
+                "alpha": alpha,
+                "rerank": rerank,
+                "candidate_k": candidate_k if rerank else None,
+                "reranker_model": reranker_model if rerank else None,
             },
             "overall": {
                 "mean_hit": mean_hit,

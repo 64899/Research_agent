@@ -1,0 +1,60 @@
+2026-05-30 12:31:09 | INFO | research_agent | Agent started
+2026-05-30 12:31:09 | INFO | research_agent | query=What method does this paper propose?
+2026-05-30 12:31:09 | INFO | research_agent | config: index_dir=data/index/test_index, eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10, llm=mock, model_name=X
+2026-05-30 12:31:09 | INFO | research_agent | intent=answer
+2026-05-30 12:31:09 | INFO | research_agent | Agent finished
+2026-05-30 12:34:15 | INFO | research_agent | Agent started
+2026-05-30 12:34:15 | INFO | research_agent | query=search relevant chunks about experiments
+2026-05-30 12:34:15 | INFO | research_agent | config: index_dir=data/index/test_index, eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10, llm=mock, model_name=X
+2026-05-30 12:34:15 | INFO | research_agent | detected_intent=retrieve
+2026-05-30 12:34:15 | INFO | research_agent | calling_tool=retrieve_chunks
+2026-05-30 12:34:15 | INFO | research_agent | intent=retrieve
+2026-05-30 12:34:15 | INFO | research_agent | Agent finished
+2026-05-30 12:37:37 | INFO | research_agent | Agent started
+2026-05-30 12:37:37 | INFO | research_agent | query=What method does this paper propose?
+2026-05-30 12:37:37 | INFO | research_agent | config: index_dir=data/index/test_index, eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10, llm=mock, model_name=X
+2026-05-30 12:37:37 | INFO | research_agent | detected_intent=answer
+2026-05-30 12:37:37 | INFO | research_agent | calling_tool=answer_question
+2026-05-30 12:37:37 | INFO | research_agent | rag_tool_started
+2026-05-30 12:37:37 | INFO | research_agent | retrieved_chunks=3
+2026-05-30 12:37:37 | INFO | research_agent | prompt_built
+2026-05-30 12:37:37 | INFO | research_agent | llm=mock
+2026-05-30 12:37:37 | INFO | research_agent | answer_generated
+2026-05-30 12:37:37 | INFO | research_agent | intent=answer
+2026-05-30 12:37:37 | INFO | research_agent | Agent finished
+2026-05-30 12:41:03 | INFO | research_agent | Agent started
+2026-05-30 12:41:03 | INFO | research_agent | query=What method does this paper propose?
+2026-05-30 12:41:03 | INFO | research_agent | config: index_dir=data/index/test_index, eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10, llm=mock, model_name=X
+2026-05-30 12:41:03 | INFO | research_agent | detected_intent=answer
+2026-05-30 12:41:03 | INFO | research_agent | calling_tool=answer_question
+2026-05-30 12:41:03 | INFO | research_agent | rag_tool_started
+2026-05-30 12:41:03 | INFO | research_agent | retrieval_tool_started
+2026-05-30 12:41:03 | INFO | research_agent | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+2026-05-30 12:41:03 | INFO | research_agent | retrieval_finished results=3
+2026-05-30 12:41:03 | INFO | research_agent | retrieved_chunks=3
+2026-05-30 12:41:03 | INFO | research_agent | prompt_built
+2026-05-30 12:41:03 | INFO | research_agent | llm=mock
+2026-05-30 12:41:03 | INFO | research_agent | answer_generated
+2026-05-30 12:41:03 | INFO | research_agent | intent=answer
+2026-05-30 12:41:03 | INFO | research_agent | Agent finished
+2026-05-30 12:41:15 | INFO | research_agent | Agent started
+2026-05-30 12:41:15 | INFO | research_agent | query=search relevant chunks about experiments
+2026-05-30 12:41:15 | INFO | research_agent | config: index_dir=data/index/test_index, eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10, llm=mock, model_name=X
+2026-05-30 12:41:15 | INFO | research_agent | detected_intent=retrieve
+2026-05-30 12:41:15 | INFO | research_agent | calling_tool=retrieve_chunks
+2026-05-30 12:41:15 | INFO | research_agent | retrieval_tool_started
+2026-05-30 12:41:15 | INFO | research_agent | retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+2026-05-30 12:41:15 | INFO | research_agent | retrieval_finished results=3
+2026-05-30 12:41:15 | INFO | research_agent | intent=retrieve
+2026-05-30 12:41:15 | INFO | research_agent | Agent finished
+2026-05-30 12:43:39 | INFO | research_agent | Agent started
+2026-05-30 12:43:39 | INFO | research_agent | query=evaluate retrieval quality
+2026-05-30 12:43:39 | INFO | research_agent | config: index_dir=data/index/test_index, eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10, llm=mock, model_name=X
+2026-05-30 12:43:39 | INFO | research_agent | detected_intent=evaluate
+2026-05-30 12:43:39 | INFO | research_agent | calling_tool=evaluate_retrieval
+2026-05-30 12:43:39 | INFO | research_agent | evaluation_tool_started
+2026-05-30 12:43:39 | INFO | research_agent | evaluation_config: eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+2026-05-30 12:43:39 | INFO | research_agent | evaluation_questions=3
+2026-05-30 12:43:39 | INFO | research_agent | evaluation_finished mean_hit=1.0000 mean_recall=0.6111 mean_mrr=0.8333
+2026-05-30 12:43:39 | INFO | research_agent | intent=evaluate
+2026-05-30 12:43:39 | INFO | research_agent | Agent finished

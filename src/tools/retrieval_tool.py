@@ -4,6 +4,7 @@ from src.index.vector_store import VectorStore
 from src.rerank.reranker import Reranker
 from src.retrievers.hybrid_retriever import HybridRetriever
 import argparse
+import logging
 
 def load_retriever(index_dir: str, retriever: str, alpha: float):
     if retriever == "dense":
@@ -33,7 +34,7 @@ def load_retriever(index_dir: str, retriever: str, alpha: float):
 
     raise ValueError(f"Unsupported retriever: {retriever}")
 
-def retrieve_chunks(index_dir: str,query: str,retriever: str = "bm25",top_k: int = 3,alpha: float = 0.3,rerank: bool = False,candidate_k: int = 10,) -> list[dict]:
+def retrieve_chunks(index_dir: str,query: str,retriever: str = "bm25",top_k: int = 3,alpha: float = 0.3,rerank: bool = False,candidate_k: int = 10,logger: logging.Logger | None = None,) -> list[dict]:
     if not index_dir:
         raise ValueError("index_dir must not be empty")
 
@@ -48,6 +49,17 @@ def retrieve_chunks(index_dir: str,query: str,retriever: str = "bm25",top_k: int
 
     if candidate_k <= 0:
         raise ValueError("candidate_k must be greater than 0")
+    
+    logger = logger or logging.getLogger(__name__)
+    logger.info("retrieval_tool_started")
+    logger.info(
+        "retrieval_config: "
+        f"retriever={retriever}, "
+        f"top_k={top_k}, "
+        f"alpha={alpha}, "
+        f"rerank={rerank}, "
+        f"candidate_k={candidate_k}"
+    )
 
     loaded_retriever = load_retriever(index_dir, retriever, alpha)
 
@@ -57,7 +69,8 @@ def retrieve_chunks(index_dir: str,query: str,retriever: str = "bm25",top_k: int
     if rerank:
         reranker = Reranker("cross-encoder/ms-marco-MiniLM-L-6-v2")
         results = reranker.rerank(query, results, top_k=top_k)
-
+    
+    logger.info(f"retrieval_finished results={len(results)}")
     return results
 
 def main() -> None:

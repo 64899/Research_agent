@@ -758,3 +758,248 @@ scripts/run_agent.py
 - 增加 YAML 配置，减少命令行参数重复；
 - 增加 logging，记录检索、rerank、LLM 和 Agent 调用过程；
 - 进一步整理公共加载逻辑，减少脚本和工具之间的重复。
+
+## V0.6 初步实验：Configuration + Logging
+
+### 实验目标
+
+V0.6 的目标是把 V0.5 中已经跑通的 Agent 工具调用链路进一步工程化。本阶段不新增新的检索算法，也不改变 RAG 生成逻辑，而是重点解决两个问题：
+
+```text
+配置参数集中管理
+运行过程可观测
+```
+
+具体来说：
+
+- 用 YAML 配置文件管理 index、retriever、rerank、LLM 和 logging 参数；
+- 让 `run_agent.py`、`run_rag.py`、`evaluate_retrieval.py` 支持 `--config`；
+- 用统一 logger 记录 Agent 路由、工具调用、检索、评测和回答生成过程；
+- 保留命令行参数覆盖配置文件的能力，便于实验时临时调整。
+
+### 新增和更新文件
+
+```text
+configs/default.yaml
+configs/local_vllm.yaml
+src/config/config_loader.py
+src/utils/logger.py
+scripts/run_agent.py
+scripts/run_rag.py
+scripts/evaluate_retrieval.py
+src/agent/research_agent.py
+src/tools/retrieval_tool.py
+src/tools/rag_tool.py
+src/tools/evaluation_tool.py
+```
+
+### 配置文件结构
+
+当前配置文件按功能分为几个部分：
+
+```yaml
+index:
+  index_dir: data/index/test_index
+  eval_file: data/eval/questions.jsonl
+
+retrieval:
+  retriever: bm25
+  top_k: 3
+  alpha: 0.3
+
+rerank:
+  enabled: false
+  candidate_k: 10
+  model_name: cross-encoder/ms-marco-MiniLM-L-6-v2
+
+llm:
+  provider: mock
+  base_url: http://localhost:7890/v1
+  api_key: abc123
+  model_name: X
+  temperature: 0.1
+  max_tokens: 192
+
+logging:
+  level: INFO
+  log_file: logs/research_agent.log
+```
+
+说明：
+
+- `configs/default.yaml` 默认使用 `mock` LLM，适合不启动本地模型时调试链路；
+- `configs/local_vllm.yaml` 使用本地 vLLM，适合真实问答实验；
+- 命令行参数仍然可以覆盖配置文件，例如临时修改 `--top_k` 或 `--llm`。
+
+### Agent 配置化运行
+
+Mock LLM：
+
+```powershell
+python -m scripts.run_agent --config configs/default.yaml --query "What method does this paper propose?"
+```
+
+本地 vLLM：
+
+```powershell
+python -m scripts.run_agent --config configs/local_vllm.yaml --query "What method does this paper propose?"
+```
+
+vLLM 运行结果摘要：
+
+```text
+Type: answer
+Input: What method does this paper propose?
+
+Answer:
+The paper proposes an uncertainty-aware deep variational attention network (DVAN).
+
+Sources:
+[1] data/raw/test.pdf, page 12, chunk_id=test_p12_c73
+[2] data/raw/test.pdf, page 2, chunk_id=test_p2_c10
+[3] data/raw/test.pdf, page 1, chunk_id=test_p1_c2
+```
+
+观察：
+
+- `run_agent.py` 可以从 YAML 中读取 index、retriever、LLM 和 logging 配置；
+- 使用 `local_vllm.yaml` 时，可以直接连接本地 vLLM；
+- Agent 仍然保持 V0.5 的 answer / retrieve / evaluate 三类路由能力。
+
+### run_rag 配置化
+
+运行命令：
+
+```powershell
+python -m scripts.run_rag --config configs/default.yaml --query "What method does this paper propose?"
+```
+
+观察：
+
+- `run_rag.py` 不再必须手动输入 `--index_dir`、`--retriever`、`--top_k`、`--llm` 等重复参数；
+- 默认配置使用 BM25、`top_k=3`、mock LLM；
+- 仍可用命令行参数覆盖配置，例如：
+
+```powershell
+python -m scripts.run_rag --config configs/default.yaml --query "What method does this paper propose?" --top_k 2
+```
+
+### evaluate_retrieval 配置化
+
+运行命令：
+
+```powershell
+python -m scripts.evaluate_retrieval --config configs/default.yaml
+```
+
+运行结果与 V0.4 的 BM25 baseline 一致：
+
+```text
+Mean Hit    = 1.0000
+Mean Recall = 0.6111
+Mean MRR    = 0.8333
+```
+
+观察：
+
+- `evaluate_retrieval.py` 可以从配置文件读取 `index_dir`、`eval_file`、`retriever`、`top_k`、`alpha` 和 rerank 参数；
+- 配置化后，评测命令更短，也更适合重复实验；
+- 输出 JSON 和 `--show_results` 等已有能力仍然保留。
+
+### Logging 结果
+
+日志文件：
+
+```text
+logs/research_agent.log
+```
+
+Answer 路径日志摘要：
+
+```text
+Agent started
+query=What method does this paper propose?
+config: index_dir=data/index/test_index, eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10, llm=mock, model_name=X
+detected_intent=answer
+calling_tool=answer_question
+rag_tool_started
+retrieval_tool_started
+retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+retrieval_finished results=3
+retrieved_chunks=3
+prompt_built
+llm=mock
+answer_generated
+intent=answer
+Agent finished
+```
+
+Retrieve 路径日志摘要：
+
+```text
+detected_intent=retrieve
+calling_tool=retrieve_chunks
+retrieval_tool_started
+retrieval_config: retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+retrieval_finished results=3
+intent=retrieve
+Agent finished
+```
+
+Evaluate 路径日志摘要：
+
+```text
+detected_intent=evaluate
+calling_tool=evaluate_retrieval
+evaluation_tool_started
+evaluation_config: eval_file=data/eval/questions.jsonl, retriever=bm25, top_k=3, alpha=0.3, rerank=False, candidate_k=10
+evaluation_questions=3
+evaluation_finished mean_hit=1.0000 mean_recall=0.6111 mean_mrr=0.8333
+intent=evaluate
+Agent finished
+```
+
+观察：
+
+- 日志已经可以覆盖 answer、retrieve、evaluate 三条 Agent 路径；
+- `rag_tool`、`retrieval_tool` 和 `evaluation_tool` 的关键步骤均有记录；
+- 当回答质量或检索结果异常时，可以通过日志定位问题发生在路由、检索、rerank、prompt 构造、LLM 调用还是评测阶段；
+- 当前日志以 INFO 为主，后续可以继续加入 WARNING / ERROR 级别。
+
+### V0.6 当前结论
+
+V0.6 已经完成配置化和日志化的最小闭环：
+
+```text
+YAML config
+↓
+scripts/run_agent.py / run_rag.py / evaluate_retrieval.py
+↓
+Agent / RAG / Retrieval / Evaluation
+↓
+logs/research_agent.log
+```
+
+当前主要收益：
+
+- 常用参数集中在 YAML 中，减少重复命令行参数；
+- mock 和本地 vLLM 可以通过不同配置文件切换；
+- Agent 三类路径都有日志记录；
+- 检索和评测实验更容易复现；
+- 项目从“功能能跑”进一步推进到“可配置、可观察、可复现”。
+
+当前限制：
+
+- 配置读取逻辑在多个脚本中仍有重复；
+- logger 目前主要记录流程事件，还没有完整异常日志；
+- `calling_tool` 命名仍可进一步统一；
+- 尚未进行 Python packaging；
+- 还没有 Web UI 或可视化展示界面。
+
+后续改进方向：
+
+- 进入 V0.7：展示与项目包装；
+- 增加 Gradio 或 Streamlit 界面；
+- 整理项目架构图和演示文档；
+- 完善 README、实验表格和面试讲解材料；
+- 后续再考虑多论文管理、批量建索引、OCR、图表理解等增强能力。

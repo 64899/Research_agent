@@ -1,6 +1,7 @@
 from src.tools.retrieval_tool import retrieve_chunks
 from src.llm.vllm_client import MockLLMClient, VLLMClient
 import argparse
+import logging
 
 def build_context(chunks: list[dict]) -> str:
     context_parts = []
@@ -49,6 +50,7 @@ def answer_question(
     model_name: str = "X",
     temperature: float = 0.1,
     max_tokens: int = 192,
+    logger: logging.Logger | None = None,
 ) -> dict:
     
     if not index_dir:
@@ -57,6 +59,9 @@ def answer_question(
         raise ValueError("query must not be empty")
     if llm not in {"mock", "vllm"}:
         raise ValueError(f"Unsupported llm: {llm}")
+    
+    logger = logger or logging.getLogger(__name__)
+    logger.info("rag_tool_started")
 
     chunks = retrieve_chunks(
         index_dir=index_dir,
@@ -66,10 +71,15 @@ def answer_question(
         alpha=alpha,
         rerank=rerank,
         candidate_k=candidate_k,
+        logger=logger,
     )
+    logger.info(f"retrieved_chunks={len(chunks)}")
 
     context = build_context(chunks)
     prompt = build_prompt(query, context)
+    logger.info("prompt_built")
+    
+    logger.info(f"llm={llm}")
     if llm == "mock":
         llm_client = MockLLMClient()
         answer = llm_client.generate(
@@ -89,7 +99,8 @@ def answer_question(
             temperature=temperature,
             max_tokens=max_tokens,
         )
-    
+    logger.info("answer_generated")
+
     return {
         "question": query,
         "answer": answer,

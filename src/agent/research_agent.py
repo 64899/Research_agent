@@ -1,3 +1,4 @@
+import logging
 from src.tools.evaluation_tool import evaluate_retrieval_tool
 from src.tools.rag_tool import answer_question
 from src.tools.retrieval_tool import retrieve_chunks
@@ -16,6 +17,9 @@ class ResearchAgent:
         base_url: str = "http://localhost:7890/v1",
         api_key: str = "abc123",
         model_name: str = "X",
+        temperature: float = 0.1,
+        max_tokens: int = 192,
+        logger: logging.Logger | None = None,
     ):
         if not index_dir:
             raise ValueError("index_dir must not be empty")
@@ -31,6 +35,9 @@ class ResearchAgent:
         self.base_url = base_url
         self.api_key = api_key
         self.model_name = model_name
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.logger = logger or logging.getLogger(__name__)
 
         
     def detect_intent(self, user_input: str) -> str:
@@ -55,8 +62,10 @@ class ResearchAgent:
             raise ValueError("user_input must not be empty")
 
         intent = self.detect_intent(user_input)
+        self.logger.info(f"detected_intent={intent}")
 
         if intent == "answer":
+            self.logger.info("calling_tool=answer_question")
             result = answer_question(
                 index_dir=self.index_dir,
                 query=user_input,
@@ -69,6 +78,9 @@ class ResearchAgent:
                 base_url=self.base_url,
                 api_key=self.api_key,
                 model_name=self.model_name,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                logger=self.logger,
             )
             return {
                 "type": "answer",
@@ -78,6 +90,7 @@ class ResearchAgent:
         
 
         if intent == "retrieve":
+            self.logger.info("calling_tool=retrieve_chunks")
             chunks = retrieve_chunks(
                 index_dir=self.index_dir,
                 query=user_input,
@@ -86,6 +99,7 @@ class ResearchAgent:
                 alpha=self.alpha,
                 rerank=self.rerank,
                 candidate_k=self.candidate_k,
+                logger=self.logger,
             )
             return {
                 "type": "retrieve",
@@ -98,6 +112,7 @@ class ResearchAgent:
             if not self.eval_file:
                 raise ValueError("eval_file is required for evaluation")
 
+            self.logger.info("calling_tool=evaluate_retrieval_tool")
             result = evaluate_retrieval_tool(
                 index_dir=self.index_dir,
                 eval_file=self.eval_file,
@@ -106,6 +121,7 @@ class ResearchAgent:
                 alpha=self.alpha,
                 rerank=self.rerank,
                 candidate_k=self.candidate_k,
+                logger=self.logger,
             )
 
             return {

@@ -2,8 +2,9 @@ from scripts.evaluate_retrieval import build_result_summary, load_retriever
 from src.evaluation.retrieval_eval import evaluate_results, load_eval_questions
 from src.rerank.reranker import Reranker
 import argparse
+import logging
 
-def evaluate_retrieval_tool(index_dir: str,eval_file: str,retriever: str = "bm25",top_k: int = 3,alpha: float = 0.3,rerank: bool = False,candidate_k: int = 10,) -> dict:
+def evaluate_retrieval_tool(index_dir: str,eval_file: str,retriever: str = "bm25",top_k: int = 3,alpha: float = 0.3,rerank: bool = False,candidate_k: int = 10,logger: logging.Logger | None = None,) -> dict:
 
     if not index_dir:
         raise ValueError("index_dir must not be empty")
@@ -15,8 +16,22 @@ def evaluate_retrieval_tool(index_dir: str,eval_file: str,retriever: str = "bm25
         raise ValueError("top_k must be greater than 0")
     if candidate_k <= 0:
         raise ValueError("candidate_k must be greater than 0")
+    
+    logger = logger or logging.getLogger(__name__)
+    logger.info("evaluation_tool_started")
+    logger.info(
+        "evaluation_config: "
+        f"eval_file={eval_file}, "
+        f"retriever={retriever}, "
+        f"top_k={top_k}, "
+        f"alpha={alpha}, "
+        f"rerank={rerank}, "
+        f"candidate_k={candidate_k}"
+    )
 
     questions = load_eval_questions(eval_file)
+    logger.info(f"evaluation_questions={len(questions)}")
+
     loaded_retriever = load_retriever(index_dir, retriever, alpha)
 
     reranker = None
@@ -55,6 +70,12 @@ def evaluate_retrieval_tool(index_dir: str,eval_file: str,retriever: str = "bm25
     mean_hit = sum(report["hit"] for report in reports) / total
     mean_recall = sum(report["recall"] for report in reports) / total
     mean_mrr = sum(report["mrr"] for report in reports) / total
+    logger.info(
+        "evaluation_finished "
+        f"mean_hit={mean_hit:.4f} "
+        f"mean_recall={mean_recall:.4f} "
+        f"mean_mrr={mean_mrr:.4f}"
+    )
 
     return {
         "config": {
