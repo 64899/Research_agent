@@ -590,3 +590,171 @@ eval questions → retriever search → Hit / Recall / MRR → JSON result files
 - 校准 `expected_pages`，减少粗标注带来的误差；
 - 对比不同 `top_k`、`candidate_k` 和 `alpha`；
 - 后续进入 Agent 工具调用和工程化完善。
+
+## V0.5 初步实验：Agent Tool Calling
+
+### 实验目标
+
+V0.5 的目标是把前面已经完成的 RAG 能力从“脚本调用”整理成“工具函数 + Agent 调度”。本阶段使用规则级 Agent，不使用 LangChain，也不让 LLM 负责选择工具。
+
+当前 Agent 的职责是：
+
+```text
+用户输入
+→ 规则判断意图
+→ 调用对应工具
+→ 返回结构化结果
+```
+
+### 新增文件
+
+```text
+src/tools/__init__.py
+src/tools/retrieval_tool.py
+src/tools/rag_tool.py
+src/tools/evaluation_tool.py
+src/agent/research_agent.py
+scripts/run_agent.py
+```
+
+### 工具接口
+
+Retrieval Tool：
+
+```text
+retrieve_chunks(...)
+```
+
+作用：只检索 chunks，不生成回答。
+
+RAG Tool：
+
+```text
+answer_question(...)
+```
+
+作用：完成一次检索、context 构造、prompt 构造和 LLM 生成，返回 `question`、`answer`、`sources`、`context`、`prompt`。
+
+Evaluation Tool：
+
+```text
+evaluate_retrieval_tool(...)
+```
+
+作用：复用 V0.4 的检索评测逻辑，返回 `config`、`overall` 和逐问题结果。
+
+ResearchAgent：
+
+```text
+ResearchAgent.run(user_input)
+```
+
+作用：根据用户输入进行规则路由，然后调用对应工具。
+
+### 路由规则
+
+当前是规则级 Agent，意图判断方式如下：
+
+```text
+包含 evaluate / evaluation / metric / mrr / recall / hit
+→ evaluate
+
+包含 retrieve / search / find chunks / show chunks
+→ retrieve
+
+其他输入
+→ answer
+```
+
+说明：
+
+- 这是最小可控 Agent，不是语言级 Agent。
+- 优点是稳定、可解释、便于调试。
+- 后续如果需要更灵活的工具选择，可以在扩展阶段升级为 LLM Router。
+
+### 验收命令
+
+Retrieval Tool：
+
+```powershell
+python -m src.tools.retrieval_tool --index_dir data/index/test_index --query "What method does this paper propose?" --retriever bm25 --top_k 2
+```
+
+RAG Tool：
+
+```powershell
+python -m src.tools.rag_tool --index_dir data/index/test_index --query "What method does this paper propose?" --retriever bm25 --top_k 2 --llm mock
+```
+
+Evaluation Tool：
+
+```powershell
+python -m src.tools.evaluation_tool --index_dir data/index/test_index --eval_file data/eval/questions.jsonl --retriever bm25 --top_k 3
+```
+
+Agent Answer：
+
+```powershell
+python -m scripts.run_agent --index_dir data/index/test_index --query "What method does this paper propose?" --retriever bm25 --top_k 2 --llm mock
+```
+
+Agent Evaluate：
+
+```powershell
+python -m scripts.run_agent --index_dir data/index/test_index --eval_file data/eval/questions.jsonl --query "evaluate retrieval quality" --retriever bm25 --top_k 3
+```
+
+### 验收结果
+
+5 条最小验收命令均能正常运行：
+
+```text
+retrieval_tool → OK
+rag_tool mock → OK
+evaluation_tool → OK
+run_agent answer → OK
+run_agent evaluate → OK
+```
+
+其中 `run_agent evaluate` 的 BM25 指标与 V0.4 结果一致：
+
+```text
+Mean Hit    = 1.0000
+Mean Recall = 0.6111
+Mean MRR    = 0.8333
+```
+
+### V0.5 当前结论
+
+V0.5 已经完成最小 Agent Tool Calling：
+
+```text
+scripts/run_agent.py
+→ ResearchAgent
+→ retrieval_tool / rag_tool / evaluation_tool
+→ existing RAG and evaluation modules
+```
+
+当前 Agent 不依赖 LLM 做工具选择，而是使用关键词规则路由。这符合当前阶段目标：先把系统从脚本式调用推进到工具层和 Agent 调度层。
+
+当前主要收益：
+
+- RAG、检索和评测能力已经变成可复用工具函数；
+- `ResearchAgent` 可以统一调度 answer、retrieve、evaluate 三类任务；
+- 命令行入口统一为 `scripts/run_agent.py`；
+- 工具调用链路稳定、可解释，适合作为后续工程化基础。
+
+当前限制：
+
+- 路由依赖关键词，不理解复杂意图；
+- 没有多步规划；
+- 没有多轮记忆；
+- 没有语言级 tool calling；
+- 暂不引入 LangChain 等框架。
+
+后续改进方向：
+
+- 进入 V0.6 工程化与配置化；
+- 增加 YAML 配置，减少命令行参数重复；
+- 增加 logging，记录检索、rerank、LLM 和 Agent 调用过程；
+- 进一步整理公共加载逻辑，减少脚本和工具之间的重复。
